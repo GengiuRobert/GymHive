@@ -23,4 +23,8 @@ public class ProductController {
         return this.productService.addProduct(product);
     }
 
+    @DeleteMapping("/deleteProduct")
+    public String deleteProduct(@RequestParam("productId") String productId) {
+        return productService.deleteProduct(productId);
+    }
 }

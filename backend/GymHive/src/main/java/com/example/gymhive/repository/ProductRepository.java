@@ -23,4 +23,11 @@ public class ProductRepository {
         docRef.set(product);
         return "product saved";
     }
+
+    public String delete(String productId) {
+        CollectionReference collection = firestoreService.getCollection("products");
+        DocumentReference docRef = collection.document(productId);
+        docRef.delete();
+        return "product deleted";
+    }
 }

@@ -17,4 +17,6 @@ public class ProductService {
     public String addProduct(Product product) {
        return productRepository.save(product);
     }
+
+    public String deleteProduct(String productId) { return productRepository.delete(productId); }
 }
