@@ -4,6 +4,8 @@ import com.example.gymhive.entity.Product;
 import com.example.gymhive.repository.ProductRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 
 @Service
 public class ProductService {
@@ -21,4 +23,6 @@ public class ProductService {
     public String deleteProduct(String productId) { return productRepository.delete(productId); }
 
     public String updateProduct(String productId, Product updatedProduct) { return productRepository.update(productId,updatedProduct); }
+
+    public List<Product> getAllProducts() { return productRepository.getAll(); }
 }

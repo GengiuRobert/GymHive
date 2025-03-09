@@ -5,11 +5,14 @@ import com.example.gymhive.service.FirestoreService;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.WriteResult;
+import com.google.cloud.firestore.QuerySnapshot;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 
 @Repository
@@ -59,5 +62,18 @@ public class ProductRepository {
 
         docRef.update(updates);
         return "product updated";
+    }
+
+    public List<Product> getAll() {
+        CollectionReference collection = firestoreService.getCollection("products");
+        ApiFuture<QuerySnapshot> querySnapshot = collection.get();
+        try {
+            return querySnapshot.get().getDocuments()
+                    .stream()
+                    .map(document -> document.toObject(Product.class))
+                    .collect(Collectors.toList());
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
