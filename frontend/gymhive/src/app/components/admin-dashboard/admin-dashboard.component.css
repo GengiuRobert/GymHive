@@ -1,0 +1,77 @@
+.dummy-page {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.dummy-page h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.dummy-page button {
+  margin: 5px;
+  padding: 10px 20px;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dummy-page button:hover {
+  background-color: #0056b3;
+}
+
+.products-list {
+  margin-top: 30px;
+}
+
+.products-list h3 {
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.products-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.products-list li {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.products-list li:last-child {
+  border-bottom: none;
+}
+
+.form-section {
+  margin-bottom: 20px;
+}
+
+.form-section label,
+.form-section input {
+  display: block;
+  margin: 6px 0;
+}
+
+.form-section button {
+  display: inline-block;
+  margin-top: 10px;
+}
+
+/* Dacă vrei să fie complet block (pe toată lățimea), poți folosi:
+.form-section button {
+  display: block;
+  margin-top: 10px;
+} 
+*/
