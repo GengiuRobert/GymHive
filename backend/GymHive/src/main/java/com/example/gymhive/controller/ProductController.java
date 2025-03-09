@@ -23,8 +23,12 @@ public class ProductController {
         return this.productService.addProduct(product);
     }
 
-    @DeleteMapping("/deleteProduct")
-    public String deleteProduct(@RequestParam("productId") String productId) {
-        return productService.deleteProduct(productId);
-    }
+    @DeleteMapping("/deleteProductById")
+    @ResponseBody
+    public String deleteProduct(@RequestParam("productId") String productId) { return productService.deleteProduct(productId); }
+
+    @PutMapping("/updateProductById")
+    @ResponseBody
+    public String updateProductById(@RequestParam("productId") String productId, @RequestBody Product updatedProduct) { return productService.updateProduct(productId,updatedProduct); }
+
 }

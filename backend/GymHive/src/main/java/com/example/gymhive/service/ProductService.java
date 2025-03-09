@@ -19,4 +19,6 @@ public class ProductService {
     }
 
     public String deleteProduct(String productId) { return productRepository.delete(productId); }
+
+    public String updateProduct(String productId, Product updatedProduct) { return productRepository.update(productId,updatedProduct); }
 }

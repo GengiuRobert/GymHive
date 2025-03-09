@@ -2,9 +2,14 @@ package com.example.gymhive.repository;
 
 import com.example.gymhive.entity.Product;
 import com.example.gymhive.service.FirestoreService;
+import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.CollectionReference;
 import com.google.cloud.firestore.DocumentReference;
+import com.google.cloud.firestore.WriteResult;
 import org.springframework.stereotype.Repository;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 @Repository
@@ -29,5 +34,30 @@ public class ProductRepository {
         DocumentReference docRef = collection.document(productId);
         docRef.delete();
         return "product deleted";
+    }
+
+    public String update(String productId, Product updatedProduct) {
+
+        if(productId == null || productId.trim().isEmpty()){
+            throw new IllegalArgumentException("Product ID must not be null or empty");
+        }
+
+        CollectionReference collection = firestoreService.getCollection("products");
+        DocumentReference docRef = collection.document(productId);
+
+
+        Map<String, Object> updates = new HashMap<>();
+        if(updatedProduct.getName() != null) {
+            updates.put("name", updatedProduct.getName());
+        }
+        if(updatedProduct.getDescription() != null) {
+            updates.put("description", updatedProduct.getDescription());
+        }
+        if(updatedProduct.getPrice() != null) {
+            updates.put("price", updatedProduct.getPrice());
+        }
+
+        docRef.update(updates);
+        return "product updated";
     }
 }
