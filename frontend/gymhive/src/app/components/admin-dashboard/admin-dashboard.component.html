@@ -1,0 +1,52 @@
+<div class="dummy-page">
+  <h2>Dummy Page - Product CRUD</h2>
+
+  <div class="form-section">
+    <h3>Add Product</h3>
+    <label for="newName">Name:</label>
+    <input type="text" id="newName" [(ngModel)]="newProduct.name" placeholder="Enter product name">
+
+    <label for="newDescription">Description:</label>
+    <input type="text" id="newDescription" [(ngModel)]="newProduct.description" placeholder="Enter product description">
+
+    <label for="newPrice">Price:</label>
+    <input type="number" id="newPrice" [(ngModel)]="newProduct.price" placeholder="Enter product price">
+
+    <button (click)="addProduct()">Add Product</button>
+  </div>
+
+  <div class="form-section">
+    <h3>Update Product</h3>
+    <label for="updateProductId">Product ID:</label>
+    <input type="text" id="updateProductId" [(ngModel)]="updateProductId" placeholder="Enter product ID">
+
+    <label for="updateName">New Name:</label>
+    <input type="text" id="updateName" [(ngModel)]="updatedProduct.name" placeholder="Enter new product name">
+
+    <label for="updateDescription">New Description:</label>
+    <input type="text" id="updateDescription" [(ngModel)]="updatedProduct.description"
+      placeholder="Enter new description">
+
+    <label for="updatePrice">New Price:</label>
+    <input type="number" id="updatePrice" [(ngModel)]="updatedProduct.price" placeholder="Enter new price">
+
+    <button (click)="updateProduct()">Update Product</button>
+  </div>
+
+  <div class="form-section">
+    <h3>Delete Product</h3>
+    <label for="deleteProductId">Product ID:</label>
+    <input type="text" id="deleteProductId" [(ngModel)]="deleteProductId" placeholder="Enter product ID to delete">
+
+    <button (click)="deleteProduct()">Delete Product</button>
+  </div>
+
+  <div class="products-list">
+    <h3>Products:</h3>
+    <ul>
+      <li *ngFor="let product of products">
+        <strong>{{ product.productId }}</strong> - {{ product.name }} - {{ product.description }} - {{ product.price }}$
+      </li>
+    </ul>
+  </div>
+</div>
