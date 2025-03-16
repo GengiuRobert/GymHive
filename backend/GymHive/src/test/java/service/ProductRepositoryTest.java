@@ -96,7 +96,7 @@ public class ProductRepositoryTest {
         Exception ex = assertThrows(IllegalArgumentException.class, () ->
                 productRepository.update("", product)
         );
-        assertEquals("Product ID must not be null or empty", ex.getMessage());
+        assertEquals("product ID must not be null or empty", ex.getMessage());
     }
 
     @Test

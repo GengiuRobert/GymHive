@@ -3,9 +3,7 @@ package com.example.gymhive.repository;
 import com.example.gymhive.entity.Product;
 import com.example.gymhive.service.FirestoreService;
 import com.google.api.core.ApiFuture;
-import com.google.cloud.firestore.CollectionReference;
-import com.google.cloud.firestore.DocumentReference;
-import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
@@ -42,25 +40,32 @@ public class ProductRepository {
     public String update(String productId, Product updatedProduct) {
 
         if(productId == null || productId.trim().isEmpty()){
-            throw new IllegalArgumentException("Product ID must not be null or empty");
+            throw new IllegalArgumentException("product ID must not be null or empty");
         }
 
         CollectionReference collection = firestoreService.getCollection("products");
         DocumentReference docRef = collection.document(productId);
 
-
         Map<String, Object> updates = new HashMap<>();
-        if(updatedProduct.getName() != null) {
+
+        if (updatedProduct.getName() != null && !updatedProduct.getName().trim().isEmpty()) {
             updates.put("name", updatedProduct.getName());
         }
-        if(updatedProduct.getDescription() != null) {
+
+        if (updatedProduct.getDescription() != null && !updatedProduct.getDescription().trim().isEmpty()) {
             updates.put("description", updatedProduct.getDescription());
         }
-        if(updatedProduct.getPrice() != null) {
+
+        if (updatedProduct.getPrice() != null && updatedProduct.getPrice() > 0) {
             updates.put("price", updatedProduct.getPrice());
         }
 
+        if (updates.isEmpty()) {
+            return "no valid fields provided to update";
+        }
+
         docRef.update(updates);
+
         return "product updated";
     }
 
@@ -73,6 +78,27 @@ public class ProductRepository {
                     .map(document -> document.toObject(Product.class))
                     .collect(Collectors.toList());
         } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Product findOneByAllFields(String name, String description, Double price) {
+        CollectionReference collection = firestoreService.getCollection("products");
+
+        Query query = collection.whereEqualTo("name", name)
+                .whereEqualTo("description", description)
+                .whereEqualTo("price", price)
+                .limit(1);
+        ApiFuture<QuerySnapshot> querySnapshot = query.get();
+
+        try {
+            List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
+            if (!documents.isEmpty()) {
+                return documents.getFirst().toObject(Product.class);
+            } else {
+                return null;
+            }
+        } catch (InterruptedException | ExecutionException e){
             throw new RuntimeException(e);
         }
     }
