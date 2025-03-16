@@ -26,13 +26,13 @@ public class ProductController {
         return this.productService.addProduct(product);
     }
 
-    @DeleteMapping("/delete-product-by-id")
+    @DeleteMapping("/delete-product-by-id/{productId}")
     @ResponseBody
-    public String deleteProduct(@RequestParam("productId") String productId) { return this.productService.deleteProduct(productId); }
+    public String deleteProduct(@PathVariable("productId") String productId) { return this.productService.deleteProduct(productId); }
 
-    @PutMapping("/update-product-by-id")
+    @PutMapping("/update-product-by-id/{productId}")
     @ResponseBody
-    public String updateProductById(@RequestParam("productId") String productId, @RequestBody Product updatedProduct) { return this.productService.updateProduct(productId,updatedProduct); }
+    public String updateProductById(@PathVariable("productId") String productId, @RequestBody Product updatedProduct) { return this.productService.updateProduct(productId,updatedProduct); }
 
     @GetMapping("/get-all-products")
     @ResponseBody
