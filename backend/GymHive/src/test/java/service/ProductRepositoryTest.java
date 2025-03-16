@@ -37,6 +37,9 @@ public class ProductRepositoryTest {
     @Mock
     private QuerySnapshot querySnapshot;
 
+    @Mock
+    private Query query;
+
     @InjectMocks
     private ProductRepository productRepository;
 
@@ -125,5 +128,42 @@ public class ProductRepositoryTest {
         assertEquals("Name2", result.get(1).getName());
     }
 
+    @Test
+    void testFindOneByAllFieldsFound() throws ExecutionException, InterruptedException {
+        Product expectedProduct = new Product("id123", "Test Product", "Test Description", 100.0);
+
+        when(collectionReference.whereEqualTo("name", expectedProduct.getName())).thenReturn(query);
+        when(query.whereEqualTo("description", expectedProduct.getDescription())).thenReturn(query);
+        when(query.whereEqualTo("price", expectedProduct.getPrice())).thenReturn(query);
+        when(query.limit(1)).thenReturn(query);
+        when(query.get()).thenReturn(queryFuture);
+        when(queryFuture.get()).thenReturn(querySnapshot);
+
+        List<QueryDocumentSnapshot> docList = new ArrayList<>();
+        QueryDocumentSnapshot docSnapshot = mock(QueryDocumentSnapshot.class);
+        docList.add(docSnapshot);
+        when(querySnapshot.getDocuments()).thenReturn(docList);
+        when(docSnapshot.toObject(Product.class)).thenReturn(expectedProduct);
+
+        Product result = productRepository.findOneByAllFields(expectedProduct.getName(), expectedProduct.getDescription(), expectedProduct.getPrice());
+        assertNotNull(result, "Expected a product to be returned");
+        assertEquals(expectedProduct.getName(), result.getName(), "Product name should match");
+        assertEquals(expectedProduct.getDescription(), result.getDescription(), "Product description should match");
+        assertEquals(expectedProduct.getPrice(), result.getPrice(), "Product price should match");
+    }
+
+    @Test
+    void testFindOneByAllFieldsNotFound() throws ExecutionException, InterruptedException {
+        when(collectionReference.whereEqualTo(anyString(), any())).thenReturn(query);
+        when(query.whereEqualTo(anyString(), any())).thenReturn(query);
+        when(query.whereEqualTo(anyString(), any())).thenReturn(query);
+        when(query.limit(1)).thenReturn(query);
+        when(query.get()).thenReturn(queryFuture);
+        when(queryFuture.get()).thenReturn(querySnapshot);
+        when(querySnapshot.getDocuments()).thenReturn(new ArrayList<>());
+
+        Product result = productRepository.findOneByAllFields("NonExistent", "No Desc", 0.0);
+        assertNull(result, "Expected null when no product is found");
+    }
 
 }
