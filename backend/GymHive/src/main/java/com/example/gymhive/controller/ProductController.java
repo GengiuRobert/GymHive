@@ -20,21 +20,21 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @PostMapping("/addProduct")
+    @PostMapping("/add-product")
     @ResponseBody
     public String addProduct(@RequestBody Product product) {
         return this.productService.addProduct(product);
     }
 
-    @DeleteMapping("/deleteProductById")
+    @DeleteMapping("/delete-product-by-id/{productId}")
     @ResponseBody
-    public String deleteProduct(@RequestParam("productId") String productId) { return this.productService.deleteProduct(productId); }
+    public String deleteProduct(@PathVariable("productId") String productId) { return this.productService.deleteProduct(productId); }
 
-    @PutMapping("/updateProductById")
+    @PutMapping("/update-product-by-id/{productId}")
     @ResponseBody
-    public String updateProductById(@RequestParam("productId") String productId, @RequestBody Product updatedProduct) { return this.productService.updateProduct(productId,updatedProduct); }
+    public String updateProductById(@PathVariable("productId") String productId, @RequestBody Product updatedProduct) { return this.productService.updateProduct(productId,updatedProduct); }
 
-    @GetMapping("/getAllProducts")
+    @GetMapping("/get-all-products")
     @ResponseBody
     public List<Product> getAllProducts() { return this.productService.getAllProducts(); }
 }
