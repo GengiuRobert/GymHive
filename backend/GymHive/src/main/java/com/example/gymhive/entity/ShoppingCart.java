@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -12,6 +14,9 @@ import lombok.Setter;
 
 public class ShoppingCart {
     private String shoppingCartId;
-
-
+    private String userId;
+    private String userEmail;
+    private List<Product> products;
+    private Double totalPrice;
+    private Integer totalItems;
 }
