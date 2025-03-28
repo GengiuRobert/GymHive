@@ -11,7 +11,6 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
 public class ShoppingCart {
     private String shoppingCartId;
     private String userId;
@@ -19,4 +18,21 @@ public class ShoppingCart {
     private List<Product> products;
     private Double totalPrice;
     private Integer totalItems;
+
+    public ShoppingCart(String shoppingCartId, String userId, String userEmail, List<Product> products) {
+        this.shoppingCartId = shoppingCartId;
+        this.userId = userId;
+        this.userEmail = userEmail;
+        this.products = products;
+        this.totalItems = products.size();
+        this.totalPrice = calculateTotalPrice(products);
+    }
+
+    public Double calculateTotalPrice(List<Product> shoppingCartProducts) {
+        double totalPrice = 0.0;
+        for(Product product : shoppingCartProducts){
+            totalPrice += product.getPrice();
+        }
+        return totalPrice;
+    }
 }

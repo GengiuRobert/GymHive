@@ -1,4 +1,4 @@
-package repository;
+package service;
 
 import com.example.gymhive.entity.Product;
 import com.example.gymhive.repository.ProductRepository;

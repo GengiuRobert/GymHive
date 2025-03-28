@@ -25,6 +25,7 @@ public class ShoppingCartRepository {
         CollectionReference collecton = firestoreService.getCollection("shoppingCarts");
         DocumentReference docRef = collecton.document();
         shoppingCart.setShoppingCartId(docRef.getId());
+        docRef.set(shoppingCart);
         return "shoppingCart saved";
     }
 
@@ -41,17 +42,13 @@ public class ShoppingCartRepository {
             throw new IllegalArgumentException("ShoppingCart id cannot be null or empty");
         }
 
-        CollectionReference collecton = firestoreService.getCollection("shoppingCarts");
-        DocumentReference docRef = collecton.document();
+        CollectionReference collection = firestoreService.getCollection("shoppingCarts");
+        DocumentReference docRef = collection.document(shoppingCartId);
 
         Map<String,Object> updates = new HashMap<>();
 
         if(updatedShoppingCart.getProducts() != null && !updatedShoppingCart.getProducts().isEmpty()) {
             updates.put("products",updatedShoppingCart.getProducts());
-        }
-
-        if(updatedShoppingCart.getTotalItems() != null && !(updatedShoppingCart.getTotalItems() >=0)){
-            updates.put("totalItems",updatedShoppingCart.getTotalItems());
         }
 
         if(updatedShoppingCart.getUserEmail() != null && !updatedShoppingCart.getUserEmail().trim().isEmpty()) {
@@ -60,10 +57,6 @@ public class ShoppingCartRepository {
 
         if(updatedShoppingCart.getUserId() != null && !updatedShoppingCart.getUserId().trim().isEmpty()) {
             updates.put("userId",updatedShoppingCart.getUserId());
-        }
-
-        if(updatedShoppingCart.getTotalPrice() !=null && (updatedShoppingCart.getTotalPrice() >0)){
-            updates.put("totalPrice",updatedShoppingCart.getTotalPrice());
         }
 
         if(updates.isEmpty()){
@@ -89,29 +82,6 @@ public class ShoppingCartRepository {
             throw new RuntimeException(e);
         }
 
-    }
-
-    public ShoppingCart findOneByAllFields(String userId, String userEmail, Double totalPrice, Integer totalItems) {
-        CollectionReference collection = firestoreService.getCollection("shoppingCarts");
-
-        Query query = collection.whereEqualTo("userId", userId)
-                .whereEqualTo("userEmail", userEmail)
-                .whereEqualTo("totalPrice", totalPrice)
-                .whereEqualTo("totalItems", totalItems)
-                .limit(1);
-
-        ApiFuture<QuerySnapshot> querySnapshot = query.get();
-
-        try {
-            List<QueryDocumentSnapshot> documents = querySnapshot.get().getDocuments();
-            if (!documents.isEmpty()) {
-                return documents.getFirst().toObject(ShoppingCart.class);
-            } else {
-                return null;
-            }
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RuntimeException(e);
-        }
     }
 
 }
