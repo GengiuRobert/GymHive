@@ -39,9 +39,10 @@ public class UserRepository {
             }
 
             String responseBody = response.toString();
+            System.out.println("Firebase Response: " + responseBody);
 
-            if (responseBody.contains("localId")) {
-                return "SignUp successful!";
+            if (responseBody.contains("idToken")) {
+                return "SignUp successful! ID Token: " + extractTokenFromResponse(responseBody);
             } else {
 
                 return "SignUp failed: " + responseBody;
@@ -49,6 +50,14 @@ public class UserRepository {
         } catch (Exception e) {
             return "An error occurred during sign-up: " + e.getMessage();
         }
+    }
+
+    private String extractTokenFromResponse(String response) {
+        String tokenStart = "\"idToken\":\"";
+        String tokenEnd = "\"";
+        int start = response.indexOf(tokenStart) + tokenStart.length();
+        int end = response.indexOf(tokenEnd, start);
+        return response.substring(start, end);
     }
 
     public String logIn(User user) throws Exception {
