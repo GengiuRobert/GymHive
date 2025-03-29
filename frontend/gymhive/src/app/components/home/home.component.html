@@ -1,0 +1,111 @@
+<div class="home-container">
+    <section class="hero-section">
+        <div class="hero-content">
+            <h1>Welcome to PowerFit Store</h1>
+            <p>Your one-stop shop for premium fitness equipment and supplements</p>
+            <div class="hero-buttons">
+                <a routerLink="/category/equipment" class="btn btn-primary">Shop Equipment</a>
+                <a routerLink="/category/supplements" class="btn btn-secondary">Explore Supplements</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="categories-section">
+        <div class="section-header">
+            <h2>Shop By Category</h2>
+        </div>
+
+        <div class="categories-grid">
+            <a *ngFor="let category of categories" [routerLink]="category.link" class="category-card">
+                <h3>{{ category.name }}</h3>
+            </a>
+        </div>
+    </section>
+
+    <section class="products-section">
+        <div class="section-header">
+            <h2>Featured Products</h2>
+        </div>
+
+        <div class="products-grid">
+            <div *ngFor="let product of featuredProducts" class="product-card">
+                <a [routerLink]="['/product', product.id]" class="product-image">
+                    <img [src]="product.image" [alt]="product.name">
+                </a>
+                <div class="product-info">
+                    <span class="product-category">{{ product.category }}</span>
+                    <h3 class="product-name">
+                        <a [routerLink]="['/product', product.id]">{{ product.name }}</a>
+                    </h3>
+                    <div class="product-price">
+                        <span class="current-price">${{ product.price.toFixed(2) }}</span>
+                    </div>
+                    <button class="btn btn-add-to-cart">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- <section class="offer-banner">
+        <div class="offer-content">
+            <div class="offer-text">
+                <h2>Summer Sale</h2>
+                <h3>Up to 40% Off Selected Items</h3>
+                <p>Limited time offer on premium fitness equipment and supplements</p>
+                <div class="countdown">
+                    <div class="countdown-item">
+                        <span class="countdown-value">{{ timeRemaining.days }}</span>
+                        <span class="countdown-label">Days</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-value">{{ timeRemaining.hours }}</span>
+                        <span class="countdown-label">Hours</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-value">{{ timeRemaining.minutes }}</span>
+                        <span class="countdown-label">Mins</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-value">{{ timeRemaining.seconds }}</span>
+                        <span class="countdown-label">Secs</span>
+                    </div>
+                </div>
+                <a routerLink="/deals" class="btn btn-primary">Shop Now</a>
+            </div>
+            <div class="offer-image" style="background-color: #444;"></div>
+        </div>
+    </section> -->
+
+    <section class="benefits-section">
+        <div class="benefits-grid">
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="icon-truck"></i>
+                </div>
+                <h3>Free Shipping</h3>
+                <p>On all orders over $75</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="icon-shield"></i>
+                </div>
+                <h3>Quality Guarantee</h3>
+                <p>100% satisfaction guaranteed</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="icon-return"></i>
+                </div>
+                <h3>Easy Returns</h3>
+                <p>30-day money back guarantee</p>
+            </div>
+            <div class="benefit-item">
+                <div class="benefit-icon">
+                    <i class="icon-support"></i>
+                </div>
+                <h3>Expert Support</h3>
+                <p>Fitness professionals available</p>
+            </div>
+        </div>
+    </section>
+</div>
