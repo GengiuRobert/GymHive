@@ -60,6 +60,10 @@ public class ProductRepository {
             updates.put("price", updatedProduct.getPrice());
         }
 
+        if (updatedProduct.getCategory() != null && !updatedProduct.getCategory().trim().isEmpty()) {
+            updates.put("category", updatedProduct.getCategory());
+        }
+
         if (updates.isEmpty()) {
             return "no valid fields provided to update";
         }
@@ -82,12 +86,13 @@ public class ProductRepository {
         }
     }
 
-    public Product findOneByAllFields(String name, String description, Double price) {
+    public Product findOneByAllFields(String name, String description, Double price, String category) {
         CollectionReference collection = firestoreService.getCollection("products");
 
         Query query = collection.whereEqualTo("name", name)
                 .whereEqualTo("description", description)
                 .whereEqualTo("price", price)
+                .whereEqualTo("category", category)
                 .limit(1);
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
 

@@ -1,0 +1,76 @@
+<header class="header">
+    <div class="header-container">
+        <div class="logo">
+            <a routerLink="/">
+                <img src="assets/logo.svg" alt="GymHive Logo" />
+            </a>
+        </div>
+
+        <nav class="desktop-nav">
+            <ul>
+                <li *ngFor="let category of categories" class="dropdown">
+                    <a [routerLink]="category.link">{{ category.name }}</a>
+                    <div class="dropdown-content">
+                        <a *ngFor="let sub of category.subcategories"
+                            [routerLink]="category.link + '/' + sub.toLowerCase()">
+                            {{ sub }}
+                        </a>
+                    </div>
+                </li>
+                <li><a routerLink="/deals">Special Deals</a></li>
+                <li><a routerLink="/blog">Fitness Blog</a></li>
+            </ul>
+        </nav>
+
+        <div class="header-actions">
+            <div class="search-container" [class.active]="isSearchOpen">
+                <button class="icon-button search-toggle" (click)="toggleSearch()" aria-label="Search">
+                    <i class="icon-search"></i>
+                </button>
+                <form *ngIf="isSearchOpen" class="search-form" (submit)="submitSearch()">
+                    <input type="text" [(ngModel)]="searchQuery" name="search" placeholder="Search products..."
+                        autocomplete="off" />
+                    <button type="submit" aria-label="Submit search">
+                        <i class="icon-search"></i>
+                    </button>
+                </form>
+            </div>
+
+            <a routerLink="/account" class="icon-button" aria-label="My Account">
+                <i class="icon-user"></i>
+            </a>
+
+            <a routerLink="/cart" class="icon-button cart" aria-label="Shopping Cart">
+                <i class="icon-cart"></i>
+                <span class="cart-count" *ngIf="cartItemCount > 0">{{ cartItemCount }}</span>
+            </a>
+
+            <a routerLink="/login" class="icon-button" aria-label="Log In">
+                <i class="fa fa-sign-in" aria-hidden="true" style="color:rgb(255, 255, 255)"></i>
+            </a>
+
+
+            <button class="icon-button menu-toggle" (click)="toggleMenu()" aria-label="Menu">
+                <i [class]="isMenuOpen ? 'icon-close' : 'icon-menu'"></i>
+            </button>
+        </div>
+    </div>
+
+    <nav class="mobile-nav" [class.open]="isMenuOpen">
+        <ul>
+            <li *ngFor="let category of categories" class="mobile-dropdown">
+                <a [routerLink]="category.link" (click)="toggleMenu()">{{ category.name }}</a>
+                <ul class="mobile-dropdown-content">
+                    <li *ngFor="let sub of category.subcategories">
+                        <a [routerLink]="category.link + '/' + sub.toLowerCase()" (click)="toggleMenu()">
+                            {{ sub }}
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li><a routerLink="/deals" (click)="toggleMenu()">Special Deals</a></li>
+            <li><a routerLink="/blog" (click)="toggleMenu()">Fitness Blog</a></li>
+            <li><a routerLink="/account" (click)="toggleMenu()">My Account</a></li>
+        </ul>
+    </nav>
+</header>

@@ -30,11 +30,15 @@ public class ProductService {
         if (product.getPrice() == null || product.getPrice() <= 0) {
             throw new IllegalArgumentException("product price must be greater than 0");
         }
+        if (product.getCategory() == null || product.getCategory().trim().isEmpty()) {
+            throw new IllegalArgumentException("product category cannot be null or empty");
+        }
 
         Product existingProduct = productRepository.findOneByAllFields(
                 product.getName(),
                 product.getDescription(),
-                product.getPrice()
+                product.getPrice(),
+                product.getCategory()
         );
 
         if (existingProduct != null) {

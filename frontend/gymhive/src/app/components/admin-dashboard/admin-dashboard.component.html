@@ -11,6 +11,9 @@
 
     <label for="newPrice">Price:</label>
     <input type="number" id="newPrice" [(ngModel)]="newProduct.price" placeholder="Enter product price">
+    
+    <label for="newCategory">Price:</label>
+    <input type="text" id="newCategory" [(ngModel)]="newProduct.category" placeholder="Enter product category">
 
     <button (click)="addProduct()">Add Product</button>
   </div>
@@ -30,6 +33,9 @@
     <label for="updatePrice">New Price:</label>
     <input type="number" id="updatePrice" [(ngModel)]="updatedProduct.price" placeholder="Enter new price">
 
+    <label for="updateCategory">New Category:</label>
+    <input type="text" id="updateCategory" [(ngModel)]="updatedProduct.category" placeholder="Enter new category">
+
     <button (click)="updateProduct()">Update Product</button>
   </div>
 
@@ -45,7 +51,7 @@
     <h3>Products:</h3>
     <ul>
       <li *ngFor="let product of products">
-        <strong>{{ product.productId }}</strong> - {{ product.name }} - {{ product.description }} - {{ product.price }}$
+        <strong>{{ product.productId }}</strong> - {{ product.name }} - {{ product.description }} - {{ product.price }}$ - {{ product.category }}
       </li>
     </ul>
   </div>

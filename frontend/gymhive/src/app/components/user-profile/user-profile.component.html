@@ -1,0 +1,225 @@
+<div class="profile-container">
+    <div class="profile-sidebar">
+        <div class="user-info">
+            <div class="user-avatar">
+                <span>{{ user.firstName.charAt(0) }}{{ user.lastName.charAt(0) }}</span>
+            </div>
+            <h3>{{ user.firstName }} {{ user.lastName }}</h3>
+            <p>{{ user.email }}</p>
+        </div>
+
+        <nav class="profile-nav">
+            <ul>
+                <li [class.active]="activeTab === 'profile'">
+                    <a (click)="setActiveTab('profile')">
+                        <i class="icon-user"></i>
+                        <span>My Profile</span>
+                    </a>
+                </li>
+                <li [class.active]="activeTab === 'orders'">
+                    <a (click)="setActiveTab('orders')">
+                        <i class="icon-package"></i>
+                        <span>My Orders</span>
+                    </a>
+                </li>
+                <li [class.active]="activeTab === 'wishlist'">
+                    <a (click)="setActiveTab('wishlist')">
+                        <i class="icon-heart"></i>
+                        <span>Wishlist</span>
+                    </a>
+                </li>
+                <li>
+                    <a routerLink="/logout">
+                        <i class="icon-log-out"></i>
+                        <span>Logout</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="profile-content">
+        <div class="success-message" *ngIf="successMessage">
+            {{ successMessage }}
+        </div>
+
+        <div class="profile-tab" *ngIf="activeTab === 'profile'">
+            <div class="section-header">
+                <h2>Personal Information</h2>
+                <button *ngIf="!isEditing" class="btn btn-secondary" (click)="startEditing()">Edit Profile</button>
+            </div>
+
+            <div class="profile-details" *ngIf="!isEditing">
+                <div class="detail-group">
+                    <div class="detail-item">
+                        <span class="label">First Name</span>
+                        <span class="value">{{ user.firstName }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Last Name</span>
+                        <span class="value">{{ user.lastName }}</span>
+                    </div>
+                </div>
+
+                <div class="detail-group">
+                    <div class="detail-item">
+                        <span class="label">Email</span>
+                        <span class="value">{{ user.email }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="label">Phone</span>
+                        <span class="value">{{ user.phone }}</span>
+                    </div>
+                </div>
+
+                <div class="address-section">
+                    <h3>Shipping Address</h3>
+                    <div class="address">
+                        <p>{{ user.address.street }}</p>
+                        <p>{{ user.address.city }}, {{ user.address.state }} {{ user.address.zipCode }}</p>
+                        <p>{{ user.address.country }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <form class="edit-profile-form" *ngIf="isEditing" (ngSubmit)="saveProfile()">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName" [(ngModel)]="editedUser.firstName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" [(ngModel)]="editedUser.lastName" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" [(ngModel)]="editedUser.email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone</label>
+                        <input type="text" id="phone" name="phone" [(ngModel)]="editedUser.phone" required>
+                    </div>
+                </div>
+
+                <h3>Shipping Address</h3>
+                <div class="form-group">
+                    <label for="street">Street Address</label>
+                    <input type="text" id="street" name="street" [(ngModel)]="editedUser.address.street" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" id="city" name="city" [(ngModel)]="editedUser.address.city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" id="state" name="state" [(ngModel)]="editedUser.address.state" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="zipCode">Zip Code</label>
+                        <input type="text" id="zipCode" name="zipCode" [(ngModel)]="editedUser.address.zipCode"
+                            required>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" id="country" name="country" [(ngModel)]="editedUser.address.country"
+                            required>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-outline" (click)="cancelEditing()">Cancel</button>
+                    <button type="submit" class="btn btn-primary" [disabled]="isSaving">
+                        <span *ngIf="isSaving">Saving...</span>
+                        <span *ngIf="!isSaving">Save Changes</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="orders-tab" *ngIf="activeTab === 'orders'">
+            <div class="section-header">
+                <h2>My Orders</h2>
+            </div>
+
+            <div class="orders-list" *ngIf="orders.length > 0">
+                <div class="order-card" *ngFor="let order of orders">
+                    <div class="order-header">
+                        <div>
+                            <h3>Order #{{ order.id }}</h3>
+                            <p class="order-date">Placed on {{ order.date }}</p>
+                        </div>
+                        <div class="order-status" [ngClass]="order.status.toLowerCase()">
+                            {{ order.status }}
+                        </div>
+                    </div>
+
+                    <div class="order-items">
+                        <div class="order-item" *ngFor="let item of order.items">
+                            <div class="item-details">
+                                <p class="item-name">{{ item.name }}</p>
+                                <p class="item-quantity">Qty: {{ item.quantity }}</p>
+                            </div>
+                            <p class="item-price">${{ item.price.toFixed(2) }}</p>
+                        </div>
+                    </div>
+
+                    <div class="order-footer">
+                        <div class="order-total">
+                            <span>Total:</span>
+                            <span class="total-price">${{ order.total.toFixed(2) }}</span>
+                        </div>
+                        <div class="order-actions">
+                            <a [routerLink]="['/orders', order.id]" class="btn btn-outline">View Details</a>
+                            <button class="btn btn-secondary">Track Order</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" *ngIf="orders.length === 0">
+                <div class="empty-icon">📦</div>
+                <h3>No Orders Yet</h3>
+                <p>You haven't placed any orders yet.</p>
+                <a routerLink="/products" class="btn btn-primary">Start Shopping</a>
+            </div>
+        </div>
+
+        <div class="wishlist-tab" *ngIf="activeTab === 'wishlist'">
+            <div class="section-header">
+                <h2>My Wishlist</h2>
+            </div>
+
+            <div class="wishlist-grid" *ngIf="wishlist.length > 0">
+                <div class="wishlist-item" *ngFor="let item of wishlist">
+                    <button class="remove-btn" (click)="removeFromWishlist(item.id)" aria-label="Remove from wishlist">
+                        <i class="icon-x"></i>
+                    </button>
+                    <div class="item-image">
+                        <img [src]="item.image" [alt]="item.name">
+                    </div>
+                    <div class="item-details">
+                        <h3>{{ item.name }}</h3>
+                        <p class="item-price">${{ item.price.toFixed(2) }}</p>
+                        <button class="btn btn-primary">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="empty-state" *ngIf="wishlist.length === 0">
+                <div class="empty-icon">❤️</div>
+                <h3>Your Wishlist is Empty</h3>
+                <p>Save items you love to your wishlist.</p>
+                <a routerLink="/products" class="btn btn-primary">Explore Products</a>
+            </div>
+        </div>
+    </div>
+</div>

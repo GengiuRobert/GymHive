@@ -1,0 +1,53 @@
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Sign In</h1>
+            <p>Welcome back! Please enter your details.</p>
+        </div>
+
+        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="auth-form">
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" [(ngModel)]="loginData.email" required email
+                    placeholder="Enter your email" #email="ngModel">
+                <div class="error-message" *ngIf="email.invalid && (email.dirty || email.touched)">
+                    <span *ngIf="email.errors?.['required']">Email is required</span>
+                    <span *ngIf="email.errors?.['email']">Please enter a valid email</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="password-label">
+                    <label for="password">Password</label>
+                    <a routerLink="/forgot-password" class="forgot-password">Forgot password?</a>
+                </div>
+                <input type="password" id="password" name="password" [(ngModel)]="loginData.password" required
+                    minlength="6" placeholder="Enter your password" #password="ngModel">
+                <div class="error-message" *ngIf="password.invalid && (password.dirty || password.touched)">
+                    <span *ngIf="password.errors?.['required']">Password is required</span>
+                    <span *ngIf="password.errors?.['minlength']">Password must be at least 6 characters</span>
+                </div>
+            </div>
+
+            <div class="form-group checkbox">
+                <label>
+                    <input type="checkbox" name="rememberMe" [(ngModel)]="loginData.rememberMe">
+                    <span>Remember me</span>
+                </label>
+            </div>
+
+            <div class="error-message" *ngIf="errorMessage">
+                {{ errorMessage }}
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block" [disabled]="loginForm.invalid || isSubmitting">
+                <span *ngIf="isSubmitting">Signing in...</span>
+                <span *ngIf="!isSubmitting">Sign In</span>
+            </button>
+
+            <div class="auth-footer">
+                <p>Don't have an account? <a routerLink="/register">Sign up</a></p>
+            </div>
+        </form>
+    </div>
+</div>

@@ -17,7 +17,8 @@ export class AdminDashboardComponent implements OnInit {
   newProduct: Product = {
     name: '',
     description: '',
-    price: 0
+    price: 0,
+    category: ''
   };
 
   updateProductId: string = '';
@@ -25,7 +26,8 @@ export class AdminDashboardComponent implements OnInit {
     productId: '',
     name: '',
     description: '',
-    price: 0
+    price: 0,
+    category: ''
   };
 
   deleteProductId: string = '';
@@ -52,7 +54,7 @@ export class AdminDashboardComponent implements OnInit {
       res => {
         console.log(res);
         this.getAllProducts();
-        this.newProduct = { name: '', description: '', price: 0 };
+        this.newProduct = { name: '', description: '', price: 0, category: '' };
       },
       error => console.error('Error adding product:', error)
     );
@@ -64,7 +66,7 @@ export class AdminDashboardComponent implements OnInit {
         console.log(res);
         this.getAllProducts();
         this.updateProductId = '';
-        this.updatedProduct = { productId: '', name: '', description: '', price: 0 };
+        this.updatedProduct = { productId: '', name: '', description: '', price: 0, category: '' };
       },
       error => console.error('Error updating product:', error)
     );

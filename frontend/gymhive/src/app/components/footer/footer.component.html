@@ -1,0 +1,115 @@
+<footer class="footer">
+    <div class="footer-container">
+        <div class="footer-top">
+            <div class="footer-column">
+                <div class="footer-logo">
+                    <img src="assets/logo.svg" alt="GymHive" />
+                </div>
+                <p class="footer-tagline">
+                    Your one-stop shop for premium fitness equipment, supplements, and apparel.
+                </p>
+                <div class="social-links">
+                    <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Facebook">
+                        <i class="icon-facebook"></i>
+                    </a>
+                    <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
+                        <i class="icon-instagram"></i>
+                    </a>
+                    <a href="https://twitter.com" target="_blank" rel="noopener" aria-label="Twitter">
+                        <i class="icon-twitter"></i>
+                    </a>
+                    <a href="https://youtube.com" target="_blank" rel="noopener" aria-label="YouTube">
+                        <i class="icon-youtube"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h3>Shop</h3>
+                <ul>
+                    <li><a routerLink="/category/equipment">Equipment</a></li>
+                    <li><a routerLink="/category/supplements">Supplements</a></li>
+                    <li><a routerLink="/category/apparel">Apparel</a></li>
+                    <li><a routerLink="/category/nutrition">Nutrition</a></li>
+                    <li><a routerLink="/deals">Special Deals</a></li>
+                    <li><a routerLink="/new-arrivals">New Arrivals</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Support</h3>
+                <ul>
+                    <li><a routerLink="/contact">Contact Us</a></li>
+                    <li><a routerLink="/faq">FAQs</a></li>
+                    <li><a routerLink="/shipping">Shipping Info</a></li>
+                    <li><a routerLink="/returns">Returns & Exchanges</a></li>
+                    <li><a routerLink="/size-guide">Size Guide</a></li>
+                    <li><a routerLink="/track-order">Track Your Order</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h3>Company</h3>
+                <ul>
+                    <li><a routerLink="/about">About Us</a></li>
+                    <li><a routerLink="/blog">Fitness Blog</a></li>
+                    <li><a routerLink="/careers">Careers</a></li>
+                    <li><a routerLink="/press">Press</a></li>
+                    <li><a routerLink="/affiliates">Affiliate Program</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column newsletter">
+                <h3>Stay Updated</h3>
+                <p>Subscribe to our newsletter for exclusive deals, fitness tips, and new product alerts.</p>
+                <form (submit)="subscribeToNewsletter()" class="newsletter-form">
+                    <div class="form-group">
+                        <input type="email" [(ngModel)]="email" name="email" placeholder="Your email address"
+                            required />
+                        <button type="submit">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="footer-middle">
+            <div class="payment-methods">
+                <span>Payment Methods:</span>
+                <div class="payment-icons">
+                    <i class="payment-icon visa"></i>
+                    <i class="payment-icon mastercard"></i>
+                    <i class="payment-icon amex"></i>
+                    <i class="payment-icon paypal"></i>
+                    <i class="payment-icon apple-pay"></i>
+                    <i class="payment-icon google-pay"></i>
+                </div>
+            </div>
+
+            <div class="trust-badges">
+                <div class="badge">
+                    <i class="icon-truck"></i>
+                    <span>Free Shipping on orders $75+</span>
+                </div>
+                <div class="badge">
+                    <i class="icon-shield"></i>
+                    <span>Secure Payment</span>
+                </div>
+                <div class="badge">
+                    <i class="icon-return"></i>
+                    <span>30-Day Returns</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="copyright">
+                &copy; {{ currentYear }} GymHive. All rights reserved.
+            </div>
+            <div class="legal-links">
+                <a routerLink="/privacy">Privacy Policy</a>
+                <a routerLink="/terms">Terms of Service</a>
+                <a routerLink="/accessibility">Accessibility</a>
+            </div>
+        </div>
+    </div>
+</footer>

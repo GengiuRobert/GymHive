@@ -68,10 +68,3 @@
   display: inline-block;
   margin-top: 10px;
 }
-
-/* Dacă vrei să fie complet block (pe toată lățimea), poți folosi:
-.form-section button {
-  display: block;
-  margin-top: 10px;
-} 
-*/
