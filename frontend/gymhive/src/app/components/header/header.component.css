@@ -49,7 +49,7 @@
     display: none;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
     .desktop-nav {
         display: block;
         flex: 1 1 auto;
@@ -114,7 +114,6 @@
     align-items: center;
     margin: 0;
     margin-left: auto;
-    /* Push icons to the right */
 }
 
 .icon-button {
@@ -151,7 +150,7 @@
     margin: 0;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
     .menu-toggle {
         display: none;
     }
@@ -224,7 +223,7 @@
     display: block;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 992px) {
     .mobile-nav {
         display: none !important;
     }
