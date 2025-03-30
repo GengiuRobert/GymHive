@@ -5,11 +5,11 @@
             <p>Join GymHive Store to start your fitness journey</p>
         </div>
 
-        <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="auth-form">
+        <form (ngSubmit)="onSubmit(registerForm)" #registerForm="ngForm" class="auth-form">
             <div class="form-row">
                 <div class="form-group">
                     <label for="firstName">First Name</label>
-                    <input type="text" id="firstName" name="firstName" [(ngModel)]="registerData.firstName" required
+                    <input type="text" id="firstName" name="firstName" [(ngModel)]="userData.firstName" required
                         placeholder="First name" #firstName="ngModel">
                     <div class="error-message" *ngIf="firstName.invalid && (firstName.dirty || firstName.touched)">
                         <span *ngIf="firstName.errors?.['required']">First name is required</span>
@@ -18,7 +18,7 @@
 
                 <div class="form-group">
                     <label for="lastName">Last Name</label>
-                    <input type="text" id="lastName" name="lastName" [(ngModel)]="registerData.lastName" required
+                    <input type="text" id="lastName" name="lastName" [(ngModel)]="userData.lastName" required
                         placeholder="Last name" #lastName="ngModel">
                     <div class="error-message" *ngIf="lastName.invalid && (lastName.dirty || lastName.touched)">
                         <span *ngIf="lastName.errors?.['required']">Last name is required</span>
@@ -28,7 +28,7 @@
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" [(ngModel)]="registerData.email" required email
+                <input type="email" id="email" name="email" [(ngModel)]="userData.email" required email
                     placeholder="Enter your email" #email="ngModel">
                 <div class="error-message" *ngIf="email.invalid && (email.dirty || email.touched)">
                     <span *ngIf="email.errors?.['required']">Email is required</span>
@@ -38,7 +38,7 @@
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" [(ngModel)]="registerData.password" required
+                <input type="password" id="password" name="password" [(ngModel)]="userData.password" required
                     minlength="6" placeholder="Create a password" #password="ngModel">
                 <div class="error-message" *ngIf="password.invalid && (password.dirty || password.touched)">
                     <span *ngIf="password.errors?.['required']">Password is required</span>
@@ -49,7 +49,7 @@
             <div class="form-group">
                 <label for="confirmPassword">Confirm Password</label>
                 <input type="password" id="confirmPassword" name="confirmPassword"
-                    [(ngModel)]="registerData.confirmPassword" required placeholder="Confirm your password"
+                    [(ngModel)]="userData.confirmPassword" required placeholder="Confirm your password"
                     #confirmPassword="ngModel">
                 <div class="error-message"
                     *ngIf="confirmPassword.invalid && (confirmPassword.dirty || confirmPassword.touched)">
@@ -59,7 +59,7 @@
 
             <div class="form-group checkbox">
                 <label>
-                    <input type="checkbox" name="agreeTerms" [(ngModel)]="registerData.agreeTerms" required
+                    <input type="checkbox" name="agreeTerms" [(ngModel)]="userData.agreeTerms" required
                         #agreeTerms="ngModel">
                     <span>I agree to the <a routerLink="/terms" target="_blank">Terms of Service</a> and <a
                             routerLink="/privacy" target="_blank">Privacy Policy</a></span>

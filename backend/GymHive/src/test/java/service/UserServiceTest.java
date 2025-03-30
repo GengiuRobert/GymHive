@@ -1,5 +1,6 @@
 package service;
 
+import com.example.gymhive.entity.AuthResponse;
 import com.example.gymhive.entity.User;
 import com.example.gymhive.repository.UserRepository;
 import com.example.gymhive.service.UserService;
@@ -30,17 +31,26 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testSignUp() {
+    public void testSignUp() throws Exception {
         User user = new User("testUser", "test@example.com", "password123");
-        String repoResponse = "SignUp successful! ID Token: some_token";
-        try {
-            when(userRepository.signUp(user)).thenReturn(repoResponse);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
-        String response = userService.signUp(user);
-        assertEquals(repoResponse, response);
+        AuthResponse mockResponse = new AuthResponse(
+                "some_token",
+                "test@example.com",
+                "some_refresh_token",
+                "3600",
+                "12345"
+        );
+
+        when(userRepository.signUp(user)).thenReturn(mockResponse);
+
+        AuthResponse response = userService.signUp(user);
+
+        assertEquals(mockResponse.getIdToken(), response.getIdToken());
+        assertEquals(mockResponse.getEmail(), response.getEmail());
+        assertEquals(mockResponse.getRefreshToken(), response.getRefreshToken());
+        assertEquals(mockResponse.getExpiresIn(), response.getExpiresIn());
+        assertEquals(mockResponse.getLocalId(), response.getLocalId());
     }
 
     @Test

@@ -1,6 +1,8 @@
 package com.example.gymhive.repository;
 
+import com.example.gymhive.entity.AuthResponse;
 import com.example.gymhive.entity.User;
+import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
@@ -15,7 +17,7 @@ public class UserRepository {
 
     private static final String API_KEY = "AIzaSyDy7yDUghA_8WYM7MszGiXaRWfA1pc_H5g";
 
-    public String signUp(User user) throws Exception {
+    public AuthResponse signUp(User user) throws Exception {
         String signUpURL = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + API_KEY;
         URL url = new URL(signUpURL);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -24,7 +26,7 @@ public class UserRepository {
         conn.setDoOutput(true);
 
         String requestPayload = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}",
-                user.getUserEmail(), user.getPassword());
+                user.getEmail(), user.getPassword());
 
         try (OutputStream os = conn.getOutputStream()) {
             byte[] input = requestPayload.getBytes(StandardCharsets.UTF_8);
@@ -39,25 +41,29 @@ public class UserRepository {
             }
 
             String responseBody = response.toString();
-            System.out.println("Firebase Response: " + responseBody);
 
-            if (responseBody.contains("idToken")) {
-                return "SignUp successful! ID Token: " + extractTokenFromResponse(responseBody);
+            JSONObject jsonResponse = new JSONObject(responseBody);
+
+            if (jsonResponse.has("idToken")) {
+                String idToken = jsonResponse.getString("idToken");
+                String email = jsonResponse.getString("email");
+                String refreshToken = jsonResponse.getString("refreshToken");
+                String expiresIn = jsonResponse.getString("expiresIn");
+                String localId = jsonResponse.getString("localId");
+
+                return new AuthResponse(idToken, email, refreshToken, expiresIn, localId);
             } else {
-
-                return "SignUp failed: " + responseBody;
+                if (jsonResponse.has("error")) {
+                    JSONObject error = jsonResponse.getJSONObject("error");
+                    String errorMessage = error.getString("message");
+                    throw new Exception("SignUp failed: " + errorMessage);
+                } else {
+                    throw new Exception("Unknown error occurred during sign-up.");
+                }
             }
         } catch (Exception e) {
-            return "An error occurred during sign-up: " + e.getMessage();
+            throw new Exception("[REPOSITORY] An error occurred during sign-up: " + e.getMessage() +"\n\n");
         }
-    }
-
-    private String extractTokenFromResponse(String response) {
-        String tokenStart = "\"idToken\":\"";
-        String tokenEnd = "\"";
-        int start = response.indexOf(tokenStart) + tokenStart.length();
-        int end = response.indexOf(tokenEnd, start);
-        return response.substring(start, end);
     }
 
     public String logIn(User user) throws Exception {
@@ -69,7 +75,7 @@ public class UserRepository {
         conn.setDoOutput(true);
 
         String requestPayload = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}",
-                user.getUserEmail(), user.getPassword());
+                user.getEmail(), user.getPassword());
 
         try (OutputStream os = conn.getOutputStream()) {
             byte[] input = requestPayload.getBytes(StandardCharsets.UTF_8);
