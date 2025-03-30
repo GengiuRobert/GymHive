@@ -1,5 +1,6 @@
 package com.example.gymhive.service;
 
+import com.example.gymhive.entity.AuthResponse;
 import com.example.gymhive.entity.User;
 import com.example.gymhive.repository.UserRepository;
 import com.google.firebase.auth.FirebaseAuth;
@@ -28,11 +29,11 @@ public class UserService {
         }
     }
 
-    public String signUp(User user) {
+    public AuthResponse signUp(User user) throws Exception {
         try {
             return userRepository.signUp(user);
         } catch (Exception e) {
-            return "Error during sign-up: " + e.getMessage();
+            throw new Exception("[SERVICE] An error occurred during sign-up: " + e.getMessage() +"\n\n");
         }
     }
 

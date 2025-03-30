@@ -1,5 +1,6 @@
 package com.example.gymhive.controller;
 
+import com.example.gymhive.entity.AuthResponse;
 import com.example.gymhive.entity.User;
 import com.example.gymhive.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public String signUp(@RequestBody User user) {
+    public AuthResponse signUp(@RequestBody User user) throws Exception {
         return userService.signUp(user);
     }
 

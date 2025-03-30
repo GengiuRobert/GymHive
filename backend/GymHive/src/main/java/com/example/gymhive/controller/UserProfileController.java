@@ -22,6 +22,8 @@ public class UserProfileController {
     @PostMapping("/add-profile")
     @ResponseBody
     public String addUserProfile(@RequestBody UserProfile userProfile) {
+        System.out.println("[CONTROLLER] Adding user profile: ");
+        System.out.println(userProfile.toString());
         return this.userProfileService.addUserProfile(userProfile);
     }
 

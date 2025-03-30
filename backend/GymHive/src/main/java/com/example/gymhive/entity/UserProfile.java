@@ -16,4 +16,10 @@ public class UserProfile {
     private String lastName;
     private String phone;
     private Address address;
+
+    @Override
+    public String toString() {
+        return String.format("UserProfile { userProfileId='%s', userId='%s', firstName='%s', lastName='%s', phone='%s', address=%s }",
+                userProfileId, userId, firstName, lastName, phone, address != null ? address.toString() : "No address provided");
+    }
 }

@@ -1,7 +1,13 @@
 import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
-import { FormsModule } from "@angular/forms"
+import { FormsModule, NgForm } from "@angular/forms"
 import { RouterModule } from "@angular/router"
+
+import { UserService } from "../../services/user.service"
+
+import { RegisterData } from "../../models/register.model"
+import { AuthResponseData } from "../../models/auth.model"
+import { UserProfileService } from "../../services/profile.service"
 
 @Component({
   selector: "app-register",
@@ -11,7 +17,11 @@ import { RouterModule } from "@angular/router"
   styleUrls: ["./register.component.css"],
 })
 export class RegisterComponent {
-  registerData = {
+
+  constructor(private userService: UserService, private profileService: UserProfileService) { }
+
+
+  userData: RegisterData = {
     firstName: "",
     lastName: "",
     email: "",
@@ -23,17 +33,45 @@ export class RegisterComponent {
   isSubmitting = false
   errorMessage = ""
 
-  constructor() { }
+  onSubmit(form: NgForm): void {
 
-  onSubmit(): void {
     this.isSubmitting = true
     this.errorMessage = ""
 
-    if (this.registerData.password !== this.registerData.confirmPassword) {
+    if (!form.valid) {
+      this.errorMessage = "Form is invalid!"
+      this.isSubmitting = false;
+      return
+    }
+
+    if (this.userData.password !== this.userData.confirmPassword) {
       this.errorMessage = "Passwords do not match"
       this.isSubmitting = false
       return
     }
+
+    this.userService.signUpUser(this.userData).subscribe(
+      (response: AuthResponseData) => {
+
+        this.profileService.createUserProfile(response.localId, this.userData.firstName, this.userData.lastName).subscribe(
+          (profileResponse) => {
+            console.log("Profile created successfully:", profileResponse);
+          },
+          (profileError) => {
+            this.errorMessage = profileError.message || "Error creating user profile.";
+            this.isSubmitting = false;
+          }
+        )
+        
+        form.reset();
+      },
+      (error) => {
+        this.errorMessage = "Sign-up failed. Please try again.";
+        console.error('Error during sign-up:', error);
+        this.isSubmitting = false;
+        form.reset();
+      }
+    );
 
   }
 }

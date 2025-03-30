@@ -9,9 +9,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class User {
-
-    private String userId;
+public class AuthResponse {
+    private String idToken;
     private String email;
-    private String password;
+    private String refreshToken;
+    private String expiresIn;
+    private String localId;
 }
