@@ -4,6 +4,10 @@ import { FormsModule } from "@angular/forms"
 import { RouterModule } from "@angular/router"
 
 import { UserService } from "../../services/user.service"
+import { UserProfileService } from "../../services/profile.service"
+
+import { UserProfile } from "../../models/profile.model"
+import { response } from "express"
 
 @Component({
   selector: "app-user-profile",
@@ -15,19 +19,21 @@ import { UserService } from "../../services/user.service"
 export class UserProfileComponent implements OnInit {
   activeTab = "profile"
 
-  user = {
-    firstName: "John",
-    lastName: "Doe",
-    email: "john.doe@example.com",
-    phone: "+1 (555) 123-4567",
+  user: UserProfile = {
+    firstName: "",
+    lastName: "",
+    userEmail: "",
+    phone: "",
     address: {
-      street: "123 Fitness Street",
-      city: "Gymville",
-      state: "CA",
-      zipCode: "90210",
-      country: "United States",
+      street: "",
+      city: "",
+      state: "",
+      zipCode: "",
+      country: "",
     },
   }
+
+  editedUser: any
 
   orders = [
     {
@@ -65,14 +71,24 @@ export class UserProfileComponent implements OnInit {
   ]
 
   isEditing = false
-  editedUser: any
   isSaving = false
   successMessage = ""
+  userId: string | undefined = ""
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private profileService: UserProfileService) { }
 
   ngOnInit(): void {
-    this.editedUser = JSON.parse(JSON.stringify(this.user))
+    this.userService.user.subscribe(user => {
+      this.userId = this.userService.getId();
+    })
+
+    this.profileService.getUserProfile(this.userId).subscribe(
+      (response) => {
+        console.log("profile component" + JSON.stringify(response));
+        this.user = response;
+      }
+    )
+
   }
 
   setActiveTab(tab: string): void {
@@ -81,22 +97,47 @@ export class UserProfileComponent implements OnInit {
 
   startEditing(): void {
     this.isEditing = true
-    this.editedUser = JSON.parse(JSON.stringify(this.user))
+    this.successMessage = ""
+    this.editedUser = { ...this.user }
+    console.log(this.editedUser)
+    if (!this.editedUser.address) {
+      this.editedUser.address = { street: '', city: '', state: '', zipCode: '', country: '' }
+    }
   }
 
   cancelEditing(): void {
     this.isEditing = false
+    this.successMessage = ""
+    this.editedUser = null
   }
 
   saveProfile(): void {
     this.isSaving = true
+
+    this.profileService.updateUserProfile(this.userId, this.editedUser).subscribe(
+      (response) => {
+        this.successMessage = 'Profile updated successfully!';
+        this.user = { ...response }
+        setTimeout(() => {
+          this.successMessage = '';
+          this.isSaving = false;
+          this.isEditing = false;
+        }, 700)
+      },
+      (error) => {
+        console.error(error)
+        this.isSaving = false;
+        this.isEditing = false;
+      }
+    )
+
   }
 
   removeFromWishlist(id: number): void {
     this.wishlist = this.wishlist.filter((item) => item.id !== id)
   }
 
-  onLogOut(){
+  onLogOut() {
     this.userService.logOutUser();
   }
 
