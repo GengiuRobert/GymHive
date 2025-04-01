@@ -1,14 +1,19 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { RegisterData } from "../models/register.model";
-import { Observable } from "rxjs";
+import { BehaviorSubject, Observable, tap } from "rxjs";
+
+
 import { LoginData } from "../models/login.model";
+import { User } from "../models/user.model";
+import { AuthResponseData } from "../models/auth.model";
 
 @Injectable({ providedIn: 'root' })
 
 export class UserService {
 
     private baseUrl = 'http://localhost:8080/api/auth';
+    user = new BehaviorSubject<User | null>(null);
 
     constructor(private http: HttpClient) { }
 
@@ -23,7 +28,7 @@ export class UserService {
             returnSecureToken: true
         }
 
-        return this.http.post(my_url, singUpData);
+        return this.http.post<AuthResponseData>(my_url, singUpData);
 
     }
 
@@ -37,8 +42,39 @@ export class UserService {
             returnSecureToken: true
         }
 
-        return this.http.post(my_url, logInData);
+        return this.http.post<AuthResponseData>(my_url, logInData).pipe(
+            tap(response => {
+                this.handleAuthentication(
+                    response.email,
+                    response.localId,
+                    response.idToken,
+                    +response.expiresIn
+                );
+            })
+        );
 
+    }
+
+    logOutUser() {
+        this.user.next(null);
+        console.log('User logged out!');
+        // this.router.navigate(['/auth']);
+    }
+
+    getId() {
+        return this.user.getValue()?.id;
+    }
+
+    private handleAuthentication(
+        email: string,
+        userId: string,
+        token: string,
+        expiresIn: number
+    ) {
+        const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+        const user = new User(email, userId, token, expirationDate);
+        this.user.next(user);
+        localStorage.setItem('userData', JSON.stringify(user)); // store user in local storage
     }
 
 }

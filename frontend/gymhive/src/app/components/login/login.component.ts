@@ -43,6 +43,7 @@ export class LoginComponent {
       (logInResponse: AuthResponseData) => {
         console.log("Log In successfully:", logInResponse);
         this.router.navigate(['home']);
+        form.reset();
       },
       (error) => {
         this.errorMessage = "Log-in failed. Please try again.";
@@ -53,5 +54,6 @@ export class LoginComponent {
     );
 
   }
+
 }
 
