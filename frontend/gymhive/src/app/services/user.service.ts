@@ -2,7 +2,7 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { RegisterData } from "../models/register.model";
 import { BehaviorSubject, Observable, tap } from "rxjs";
-
+import { Router } from "@angular/router";
 
 import { LoginData } from "../models/login.model";
 import { User } from "../models/user.model";
@@ -15,7 +15,7 @@ export class UserService {
     private baseUrl = 'http://localhost:8080/api/auth';
     user = new BehaviorSubject<User | null>(null);
 
-    constructor(private http: HttpClient) { }
+    constructor(private http: HttpClient,private router:Router) { }
 
     //methods related to authentication of a user
     signUpUser(userData: RegisterData): Observable<any> {
@@ -58,7 +58,7 @@ export class UserService {
     logOutUser() {
         this.user.next(null);
         console.log('User logged out!');
-        // this.router.navigate(['/auth']);
+        this.router.navigate(['/login']);
     }
 
     getId() {

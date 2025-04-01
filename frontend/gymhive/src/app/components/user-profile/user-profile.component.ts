@@ -3,6 +3,8 @@ import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { RouterModule } from "@angular/router"
 
+import { UserService } from "../../services/user.service"
+
 @Component({
   selector: "app-user-profile",
   standalone: true,
@@ -67,7 +69,7 @@ export class UserProfileComponent implements OnInit {
   isSaving = false
   successMessage = ""
 
-  constructor() { }
+  constructor(private userService: UserService) { }
 
   ngOnInit(): void {
     this.editedUser = JSON.parse(JSON.stringify(this.user))
@@ -88,12 +90,14 @@ export class UserProfileComponent implements OnInit {
 
   saveProfile(): void {
     this.isSaving = true
-
-
   }
 
   removeFromWishlist(id: number): void {
     this.wishlist = this.wishlist.filter((item) => item.id !== id)
+  }
+
+  onLogOut(){
+    this.userService.logOutUser();
   }
 
 
