@@ -37,13 +37,15 @@ public class UserProfileRepository {
         return "userProfile deleted";
     }
 
-    public String update(String userProfileId, UserProfile updatedUserProfile) {
-        if(userProfileId == null || userProfileId.trim().isEmpty() ){
+    public UserProfile update(String userId, UserProfile updatedUserProfile) throws ExecutionException, InterruptedException {
+        if(userId == null || userId.trim().isEmpty()){
             throw new IllegalArgumentException("userProfile ID must not be null or empty");
         }
 
+        UserProfile docFoundByUserId = findByUserId(userId);
+
         CollectionReference collection = firestoreService.getCollection("userProfiles");
-        DocumentReference docRef = collection.document(userProfileId);
+        DocumentReference docRef = collection.document(docFoundByUserId.getUserProfileId());
 
         Map<String, Object> updates = new HashMap<>();
 
@@ -77,14 +79,18 @@ public class UserProfileRepository {
             updates.put("lastName", updatedUserProfile.getLastName());
         }
 
-
         if(updates.isEmpty()){
-            return "no valid fields provided to update";
+            throw new IllegalArgumentException("no valid fields provided to update");
         }
 
-        docRef.update(updates);
+        try {
+            ApiFuture<WriteResult> writeResult = docRef.update(updates);
+            writeResult.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Update failed: " + e.getMessage());
+        }
 
-        return "userProfile updated";
+        return findByProfileId(docFoundByUserId.getUserProfileId());
     }
 
     public List<UserProfile> getAll(){
@@ -110,11 +116,26 @@ public class UserProfileRepository {
 
             if (!querySnapshot.isEmpty()) {
                 DocumentSnapshot document = querySnapshot.getDocuments().getFirst();
+                System.out.println((document.toObject(UserProfile.class)).toString());
                 return document.toObject(UserProfile.class);
             }
 
             return null;
         } catch (InterruptedException | ExecutionException e){
+            throw new RuntimeException(e);
+        }
+    }
+
+    public UserProfile findByProfileId(String docId) {
+        try {
+            DocumentReference docRef = firestoreService.getCollection("userProfiles").document(docId);
+            ApiFuture<DocumentSnapshot> future = docRef.get();
+            DocumentSnapshot document = future.get();
+            if (document.exists()) {
+                return document.toObject(UserProfile.class);
+            }
+            return null;
+        } catch (InterruptedException | ExecutionException e) {
             throw new RuntimeException(e);
         }
     }
