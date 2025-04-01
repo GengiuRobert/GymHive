@@ -5,10 +5,10 @@
             <p>Welcome back! Please enter your details.</p>
         </div>
 
-        <form (ngSubmit)="onSubmit()" #loginForm="ngForm" class="auth-form">
+        <form (ngSubmit)="onSubmit(loginForm)" #loginForm="ngForm" class="auth-form">
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" [(ngModel)]="loginData.email" required email
+                <input type="email" id="email" name="email" [(ngModel)]="userData.email" required email
                     placeholder="Enter your email" #email="ngModel">
                 <div class="error-message" *ngIf="email.invalid && (email.dirty || email.touched)">
                     <span *ngIf="email.errors?.['required']">Email is required</span>
@@ -21,7 +21,7 @@
                     <label for="password">Password</label>
                     <a routerLink="/forgot-password" class="forgot-password">Forgot password?</a>
                 </div>
-                <input type="password" id="password" name="password" [(ngModel)]="loginData.password" required
+                <input type="password" id="password" name="password" [(ngModel)]="userData.password" required
                     minlength="6" placeholder="Enter your password" #password="ngModel">
                 <div class="error-message" *ngIf="password.invalid && (password.dirty || password.touched)">
                     <span *ngIf="password.errors?.['required']">Password is required</span>
@@ -31,7 +31,7 @@
 
             <div class="form-group checkbox">
                 <label>
-                    <input type="checkbox" name="rememberMe" [(ngModel)]="loginData.rememberMe">
+                    <input type="checkbox" name="rememberMe" [(ngModel)]="userData.rememberMe">
                     <span>Remember me</span>
                 </label>
             </div>

@@ -24,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public String signIn(@RequestBody User user) {
+    public AuthResponse signIn(@RequestBody User user) throws Exception {
         return userService.logIn(user);
     }
 

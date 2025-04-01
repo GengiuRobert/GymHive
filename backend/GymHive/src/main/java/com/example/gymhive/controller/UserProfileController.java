@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @RestController
 @RequestMapping("/profiles")
@@ -33,16 +34,22 @@ public class UserProfileController {
         return this.userProfileService.deleteUserProfile(userProfileId);
     }
 
-    @PutMapping("/update-profile-by-id/{userProfileId}")
+    @PutMapping("/update-profile-by-id/{userId}")
     @ResponseBody
-    public String updateUserProfile(@PathVariable("userProfileId") String userProfileId, @RequestBody UserProfile userProfile) {
-        return this.userProfileService.updateUserProfile(userProfileId, userProfile);
+    public UserProfile updateUserProfile(@PathVariable("userId") String userId, @RequestBody UserProfile userProfile) throws ExecutionException, InterruptedException {
+        return this.userProfileService.updateUserProfile(userId, userProfile);
     }
 
     @GetMapping("/get-all-profiles")
     @ResponseBody
     public List<UserProfile> getAllUserProfiles() {
         return this.userProfileService.getAllUserProfiles();
+    }
+
+    @GetMapping("/get-profile-by-id/{userProfileId}")
+    @ResponseBody
+    public UserProfile getUserProfileById(@PathVariable("userProfileId") String userProfileId) {
+        return this.userProfileService.getUserProfile(userProfileId);
     }
 
 }

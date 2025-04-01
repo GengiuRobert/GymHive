@@ -9,6 +9,7 @@ import org.mockito.*;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -26,7 +27,7 @@ public class UserProfileServiceTest {
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
-        userProfile = new UserProfile("123", "user1", "John", "Doe", "123456789", null);
+        userProfile = new UserProfile("123", "user1", "John", "Doe", "example@gmail.com","123456789", null);
     }
 
     @Test
@@ -69,19 +70,19 @@ public class UserProfileServiceTest {
     }
 
     @Test
-    void testUpdateUserProfile() {
-        UserProfile updatedUserProfile = new UserProfile("123", "user1", "Jane", "Doe", "987654321", null);
-        when(userProfileRepository.update(eq("123"), any(UserProfile.class))).thenReturn("userProfile updated");
+    void testUpdateUserProfile() throws ExecutionException, InterruptedException {
+        UserProfile updatedUserProfile = new UserProfile("123", "user1", "Jane", "Doe", "example@gmail.com","987654321", null);
+        when(userProfileRepository.update(eq("123"), any(UserProfile.class))).thenReturn(updatedUserProfile);
 
-        String result = userProfileService.updateUserProfile("123", updatedUserProfile);
+        UserProfile result = userProfileService.updateUserProfile("123", updatedUserProfile);
 
-        assertEquals("userProfile updated", result);
+        assertEquals(updatedUserProfile, result);
         verify(userProfileRepository, times(1)).update("123", updatedUserProfile);
     }
 
     @Test
     void testUpdateUserProfileWithNullId() {
-        UserProfile updatedUserProfile = new UserProfile("123", "user1", "Jane", "Doe", "987654321", null);
+        UserProfile updatedUserProfile = new UserProfile("123", "user1", "Jane", "Doe", "example@gmail.com","987654321", null);
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 userProfileService.updateUserProfile(null, updatedUserProfile)
@@ -91,8 +92,8 @@ public class UserProfileServiceTest {
 
     @Test
     void testGetAllUserProfiles() {
-        UserProfile userProfile1 = new UserProfile("101", "user2", "Alice", "Smith", "555555555", null);
-        UserProfile userProfile2 = new UserProfile("102", "user3", "Bob", "Brown", "666666666", null);
+        UserProfile userProfile1 = new UserProfile("101", "user2", "Alice", "Smith", "example@gmail.com","555555555", null);
+        UserProfile userProfile2 = new UserProfile("102", "user3", "Bob", "Brown", "example@gmail.com","666666666", null);
         List<UserProfile> mockList = Arrays.asList(userProfile1, userProfile2);
 
         when(userProfileRepository.getAll()).thenReturn(mockList);
@@ -100,7 +101,7 @@ public class UserProfileServiceTest {
         List<UserProfile> result = userProfileService.getAllUserProfiles();
 
         assertEquals(2, result.size(), "expected to get 2 user profiles");
-        assertEquals("Alice", result.get(0).getFirstName(), "expected first user's name to be 'Alice'");
+        assertEquals("Alice", result.getFirst().getFirstName(), "expected first user's name to be 'Alice'");
         verify(userProfileRepository, times(1)).getAll();
     }
 }

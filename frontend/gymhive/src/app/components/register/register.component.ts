@@ -4,10 +4,10 @@ import { FormsModule, NgForm } from "@angular/forms"
 import { RouterModule } from "@angular/router"
 
 import { UserService } from "../../services/user.service"
+import { UserProfileService } from "../../services/profile.service"
 
 import { RegisterData } from "../../models/register.model"
 import { AuthResponseData } from "../../models/auth.model"
-import { UserProfileService } from "../../services/profile.service"
 
 @Component({
   selector: "app-register",
@@ -19,7 +19,6 @@ import { UserProfileService } from "../../services/profile.service"
 export class RegisterComponent {
 
   constructor(private userService: UserService, private profileService: UserProfileService) { }
-
 
   userData: RegisterData = {
     firstName: "",
@@ -74,5 +73,6 @@ export class RegisterComponent {
     );
 
   }
+
 }
 

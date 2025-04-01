@@ -1,7 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-header',
@@ -9,10 +11,10 @@ import { RouterModule } from '@angular/router';
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   isMenuOpen = false
   isSearchOpen = false
-  cartItemCount = 0 
+  cartItemCount = 0
   categories = [
     { name: "Equipment", link: "/category/equipment", subcategories: ["Weights", "Machines", "Accessories"] },
     { name: "Supplements", link: "/category/supplements", subcategories: ["Protein", "Pre-workout", "Vitamins"] },
@@ -21,6 +23,18 @@ export class HeaderComponent {
   ]
 
   searchQuery = ""
+  isAuthenticated = false;
+  private userSub!: Subscription;
+
+  constructor(private userService: UserService) { }
+
+  ngOnInit(): void {
+
+    this.userSub = this.userService.user.subscribe(user => {
+      this.isAuthenticated = !!user
+    })
+
+  }
 
   toggleMenu(): void {
     this.isMenuOpen = !this.isMenuOpen
@@ -44,4 +58,5 @@ export class HeaderComponent {
       this.isMenuOpen = false
     }
   }
+
 }

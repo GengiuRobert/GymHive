@@ -54,17 +54,25 @@ public class UserServiceTest {
     }
 
     @Test
-    public void testLogIn() {
+    public void testLogIn() throws Exception{
         User user = new User("testUser", "test@example.com", "password123");
-        String repoResponse = "Login successful! ID Token: some_token";
-        try {
-            when(userRepository.logIn(user)).thenReturn(repoResponse);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
 
-        String response = userService.logIn(user);
-        assertEquals(repoResponse, response);
+        AuthResponse mockResponse = new AuthResponse(
+                "some_token",
+                "test@example.com",
+                "some_refresh_token",
+                "3600",
+                "12345"
+        );
+
+        when(userRepository.logIn(user)).thenReturn(mockResponse);
+
+        AuthResponse response = userService.logIn(user);
+        assertEquals(mockResponse.getIdToken(), response.getIdToken());
+        assertEquals(mockResponse.getEmail(), response.getEmail());
+        assertEquals(mockResponse.getRefreshToken(), response.getRefreshToken());
+        assertEquals(mockResponse.getExpiresIn(), response.getExpiresIn());
+        assertEquals(mockResponse.getLocalId(), response.getLocalId());
     }
 
     @Test

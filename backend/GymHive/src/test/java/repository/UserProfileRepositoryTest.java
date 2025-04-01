@@ -3,7 +3,6 @@ package repository;
 import com.example.gymhive.entity.UserProfile;
 import com.example.gymhive.repository.UserProfileRepository;
 import com.example.gymhive.service.FirestoreService;
-import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +10,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+
+import java.util.concurrent.ExecutionException;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
@@ -27,15 +28,6 @@ public class UserProfileRepositoryTest {
     @Mock
     private DocumentReference documentReference;
 
-    @Mock
-    private ApiFuture<QuerySnapshot> queryFuture;
-
-    @Mock
-    private QuerySnapshot querySnapshot;
-
-    @Mock
-    private Query query;
-
     @InjectMocks
     private UserProfileRepository userProfileRepository;
 
@@ -43,7 +35,7 @@ public class UserProfileRepositoryTest {
 
     @BeforeEach
     void setUp() {
-        userProfile = new UserProfile("123", "user1", "John", "Doe", "123456789", null);
+        userProfile = new UserProfile("123", "user1", "John", "Doe","example@gmail.com", "123456789", null);
         lenient().when(firestoreService.getCollection("userProfiles")).thenReturn(profiles);
     }
 
@@ -73,13 +65,13 @@ public class UserProfileRepositoryTest {
     }
 
     @Test
-    void testUpdate() {
+    void testUpdate() throws ExecutionException, InterruptedException {
         when(profiles.document("123")).thenReturn(documentReference);
 
-        UserProfile updatedProfile = new UserProfile("123", "user1", "Jane", "Doe", "987654321", null);
+        UserProfile updatedProfile = new UserProfile("123", "user1", "Jane", "Doe", "example@gmail.com","987654321", null);
 
-        String result = userProfileRepository.update("123", updatedProfile);
-        assertEquals("userProfile updated", result);
+        UserProfile result = userProfileRepository.update("123", updatedProfile);
+        assertEquals(updatedProfile, result);
 
         verify(documentReference, times(1)).update(anyMap());
     }

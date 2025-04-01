@@ -2,6 +2,8 @@ import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
 
+import { UserProfile } from "../models/profile.model";
+
 @Injectable({ providedIn: 'root' })
 
 export class UserProfileService {
@@ -23,5 +25,18 @@ export class UserProfileService {
 
         return this.http.post(my_url, createProfileData, { responseType: 'text' });
     }
+
+    getUserProfile(userId: string | undefined): Observable<any> {
+        let my_url = this.baseUrl + "/get-profile-by-id/" + userId;
+
+        return this.http.get(my_url);
+    }
+
+    updateUserProfile(userId: string | undefined, updatedUser: UserProfile): Observable<any>{
+        let my_url = this.baseUrl + "/update-profile-by-id/" + userId;
+
+        return this.http.put(my_url,updatedUser);
+    }
+
 
 }
