@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import org.springframework.stereotype.Repository;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -19,19 +20,7 @@ public class UserRepository {
 
     public AuthResponse signUp(User user) throws Exception {
         String signUpURL = "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" + API_KEY;
-        URL url = new URL(signUpURL);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setDoOutput(true);
-
-        String requestPayload = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}",
-                user.getEmail(), user.getPassword());
-
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = requestPayload.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
+        HttpURLConnection conn = authActionRequest(user, signUpURL);
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
@@ -45,13 +34,7 @@ public class UserRepository {
             JSONObject jsonResponse = new JSONObject(responseBody);
 
             if (jsonResponse.has("idToken")) {
-                String idToken = jsonResponse.getString("idToken");
-                String email = jsonResponse.getString("email");
-                String refreshToken = jsonResponse.getString("refreshToken");
-                String expiresIn = jsonResponse.getString("expiresIn");
-                String localId = jsonResponse.getString("localId");
-
-                return new AuthResponse(idToken, email, refreshToken, expiresIn, localId);
+                return getAuthResponse(jsonResponse);
             } else {
                 if (jsonResponse.has("error")) {
                     JSONObject error = jsonResponse.getJSONObject("error");
@@ -66,21 +49,10 @@ public class UserRepository {
         }
     }
 
-    public String logIn(User user) throws Exception {
+    public AuthResponse logIn(User user) throws Exception {
         String logInURL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" + API_KEY;
-        URL url = new URL(logInURL);
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Content-Type", "application/json");
-        conn.setDoOutput(true);
-
-        String requestPayload = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}",
-                user.getEmail(), user.getPassword());
-
-        try (OutputStream os = conn.getOutputStream()) {
-            byte[] input = requestPayload.getBytes(StandardCharsets.UTF_8);
-            os.write(input, 0, input.length);
-        }
+        authActionRequest(user, logInURL);
+        HttpURLConnection conn = authActionRequest(user, logInURL);
 
         try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
             StringBuilder response = new StringBuilder();
@@ -90,14 +62,21 @@ public class UserRepository {
             }
 
             String responseBody = response.toString();
+            JSONObject jsonResponse = new JSONObject(responseBody);
 
-            if (responseBody.contains("idToken")) {
-                return "SignIn successful!";
+            if (jsonResponse.has("idToken")) {
+                return getAuthResponse(jsonResponse);
             } else {
-                return "SignIn failed: " + responseBody;
+                if (jsonResponse.has("error")) {
+                    JSONObject error = jsonResponse.getJSONObject("error");
+                    String errorMessage = error.getString("message");
+                    throw new Exception("LogIn failed: " + errorMessage);
+                } else {
+                    throw new Exception("Unknown error occurred during log-in.");
+                }
             }
         } catch (Exception e) {
-            return "An error occurred during sign-in: " + e.getMessage();
+            throw new Exception("[REPOSITORY] An error occurred during log-in: " + e.getMessage() +"\n\n");
         }
     }
 
@@ -133,5 +112,33 @@ public class UserRepository {
         } catch (Exception e) {
             return "An error occurred during account deletion: " + e.getMessage();
         }
+    }
+
+    private AuthResponse getAuthResponse(JSONObject jsonResponse) {
+        String idToken = jsonResponse.getString("idToken");
+        String email = jsonResponse.getString("email");
+        String refreshToken = jsonResponse.getString("refreshToken");
+        String expiresIn = jsonResponse.getString("expiresIn");
+        String localId = jsonResponse.getString("localId");
+
+        return new AuthResponse(idToken, email, refreshToken, expiresIn, localId);
+    }
+
+    private HttpURLConnection authActionRequest(User user, String authURL) throws IOException {
+        URL url = new URL(authURL);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+
+        String requestPayload = String.format("{\"email\":\"%s\",\"password\":\"%s\",\"returnSecureToken\":true}",
+                user.getEmail(), user.getPassword());
+
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = requestPayload.getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
+        
+        return conn;
     }
 }

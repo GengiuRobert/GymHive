@@ -37,11 +37,11 @@ public class UserService {
         }
     }
 
-    public String logIn(User user) {
+    public AuthResponse logIn(User user) throws Exception {
         try {
             return userRepository.logIn(user);
         } catch (Exception e) {
-            return "Error during logIn: " + e.getMessage();
+            throw new Exception("[SERVICE] An error occurred during log-in: " + e.getMessage() +"\n\n");
         }
     }
 
