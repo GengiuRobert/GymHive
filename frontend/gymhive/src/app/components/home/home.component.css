@@ -30,6 +30,7 @@ section {
   font-size: 1.75rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
+  color: #ff6b00;
 }
 
 @media (min-width: 768px) {
