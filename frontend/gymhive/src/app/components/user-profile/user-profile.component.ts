@@ -3,16 +3,19 @@ import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { RouterModule } from "@angular/router"
 
+import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
+
 import { UserService } from "../../services/user.service"
 import { UserProfileService } from "../../services/profile.service"
+import { SpinnerService } from "../../services/spinner.service"
 
 import { UserProfile } from "../../models/profile.model"
-import { response } from "express"
+import { finalize } from "rxjs"
 
 @Component({
   selector: "app-user-profile",
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule],
+  imports: [CommonModule, FormsModule, RouterModule, LoadingSpinnerComponent],
   templateUrl: "./user-profile.component.html",
   styleUrls: ["./user-profile.component.css"],
 })
@@ -75,20 +78,21 @@ export class UserProfileComponent implements OnInit {
   successMessage = ""
   userId: string | undefined = ""
 
-  constructor(private userService: UserService, private profileService: UserProfileService) { }
+  constructor(private userService: UserService, private profileService: UserProfileService, private spinnerService: SpinnerService) { }
 
   ngOnInit(): void {
-    this.userService.user.subscribe(user => {
-      this.userId = this.userService.getId();
-    })
+    this.spinnerService.showSpinner();
+    this.loadUserProfile();
+  }
 
-    this.profileService.getUserProfile(this.userId).subscribe(
+  loadUserProfile() {
+    this.userId = this.userService.getId();
+    this.profileService.getUserProfile(this.userId).pipe(finalize(() => this.spinnerService.hideSpinner())).subscribe(
       (response) => {
         console.log("profile component" + JSON.stringify(response));
         this.user = response;
       }
     )
-
   }
 
   setActiveTab(tab: string): void {

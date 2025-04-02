@@ -10,12 +10,6 @@
             <ul>
                 <li *ngFor="let category of categories" class="dropdown">
                     <a [routerLink]="category.link">{{ category.name }}</a>
-                    <div class="dropdown-content">
-                        <a *ngFor="let sub of category.subcategories"
-                            [routerLink]="category.link + '/' + sub.toLowerCase()">
-                            {{ sub }}
-                        </a>
-                    </div>
                 </li>
                 <li><a routerLink="/deals">Special Deals</a></li>
                 <li><a routerLink="/blog">Fitness Blog</a></li>
@@ -37,11 +31,9 @@
             </div>
 
             @if(isAuthenticated){
-
             <a routerLink="/account" class="icon-button" aria-label="My Account">
                 <i class="icon-user"></i>
             </a>
-
             }
 
             <a routerLink="/cart" class="icon-button cart" aria-label="Shopping Cart">
@@ -65,13 +57,6 @@
         <ul>
             <li *ngFor="let category of categories" class="mobile-dropdown">
                 <a [routerLink]="category.link" (click)="toggleMenu()">{{ category.name }}</a>
-                <ul class="mobile-dropdown-content">
-                    <li *ngFor="let sub of category.subcategories">
-                        <a [routerLink]="category.link + '/' + sub.toLowerCase()" (click)="toggleMenu()">
-                            {{ sub }}
-                        </a>
-                    </li>
-                </ul>
             </li>
             <li><a routerLink="/deals" (click)="toggleMenu()">Special Deals</a></li>
             <li><a routerLink="/blog" (click)="toggleMenu()">Fitness Blog</a></li>
