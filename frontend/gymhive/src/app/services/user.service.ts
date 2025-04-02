@@ -15,7 +15,9 @@ export class UserService {
     private baseUrl = 'http://localhost:8080/api/auth';
     user = new BehaviorSubject<User | null>(null);
 
-    constructor(private http: HttpClient,private router:Router) { }
+    constructor(private http: HttpClient, private router: Router) {
+        this.autoLogin();
+    }
 
     //methods related to authentication of a user
     signUpUser(userData: RegisterData): Observable<any> {
@@ -75,6 +77,34 @@ export class UserService {
         const user = new User(email, userId, token, expirationDate);
         this.user.next(user);
         localStorage.setItem('userData', JSON.stringify(user)); // store user in local storage
+    }
+
+    autoLogin() {
+        if (typeof window === 'undefined' || !window.localStorage) {
+            return;
+        }
+        const userDataStr = localStorage.getItem('userData');
+        if (!userDataStr) {
+            return;
+        }
+        const userData: {
+            email: string;
+            id: string;
+            _token: string;
+            _tokenExpirationDate: string;
+        } = JSON.parse(userDataStr);
+        if (!userData) {
+            return;
+        }
+        const loadedUser = new User(
+            userData.email,
+            userData.id,
+            userData._token,
+            new Date(userData._tokenExpirationDate)
+        );
+        if (loadedUser.token) {
+            this.user.next(loadedUser);
+        }
     }
 
 }
