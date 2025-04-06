@@ -21,17 +21,22 @@ export class UserService {
 
     //methods related to authentication of a user
     signUpUser(userData: RegisterData): Observable<any> {
-
         let my_url = this.baseUrl + "/signup";
 
-        let singUpData = {
+        let signUpData = {
             email: userData.email,
             password: userData.password,
             returnSecureToken: true
-        }
+        };
 
-        return this.http.post<AuthResponseData>(my_url, singUpData);
-
+        return this.http.post<AuthResponseData>(my_url, signUpData).pipe(
+            tap(response => {
+                this.sendVerificationEmail(response.idToken).subscribe(
+                    () => console.log('Verification mail sent!'),
+                    err => console.error('Error sending verification email:', err)
+                );
+            })
+        );
     }
 
     logInUser(userData: LoginData): Observable<any> {
@@ -55,6 +60,19 @@ export class UserService {
             })
         );
 
+    }
+
+    sendVerificationEmail(idToken: string) {
+
+        let my_url = this.baseUrl + "/verify-email";
+
+        let sendVerificationEmailData = {
+            requestType: "VERIFY_EMAIL",
+            idToken: idToken
+        }
+
+
+        return this.http.post(my_url, sendVerificationEmailData, { responseType: 'text' });
     }
 
     logOutUser() {

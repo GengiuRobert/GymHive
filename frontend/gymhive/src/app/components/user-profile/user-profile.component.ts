@@ -11,6 +11,7 @@ import { SpinnerService } from "../../services/spinner.service"
 
 import { UserProfile } from "../../models/profile.model"
 import { finalize } from "rxjs"
+import { error } from "console";
 
 @Component({
   selector: "app-user-profile",
@@ -91,6 +92,9 @@ export class UserProfileComponent implements OnInit {
       (response) => {
         console.log("profile component" + JSON.stringify(response));
         this.user = response;
+      },
+      (error) => {
+        console.log("profile component error:  " + error);
       }
     )
   }

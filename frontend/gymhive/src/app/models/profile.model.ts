@@ -2,8 +2,8 @@ export interface UserProfile {
     firstName: string,
     lastName: string,
     userEmail: string,
-    phone: string | null,
-    address: {
+    phone?: string | null,
+    address?: {
         street: string | null,
         city: string | null,
         state: string | null,

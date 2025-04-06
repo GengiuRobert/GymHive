@@ -48,11 +48,11 @@
         </div>
 
         <div class="incomplete-profile-message" *ngIf="!user.phone 
-        || !user.address.city 
-        || !user.address.country 
-        || !user.address.state 
-        || !user.address.street 
-        || !user.address.zipCode">
+        || !user.address?.city 
+        || !user.address?.country 
+        || !user.address?.state 
+        || !user.address?.street 
+        || !user.address?.zipCode">
             <p>Your profile is incomplete. Please edit your profile to complete it.
             </p>
         </div>
@@ -89,12 +89,12 @@
                 <div class="address-section">
                     <h3>Shipping Address</h3>
                     <div class="address">
-                        <p><strong>Street:</strong> {{ user.address.street || "Complete your street!"}}</p>
-                        <p><strong>City:</strong> {{ user.address.city || "Complete your city!" }},
-                            <strong>State:</strong> {{ user.address.state || "Complete your state!" }},
-                            <strong>Zip Code:</strong> {{ user.address.zipCode || "Complete your zip code!" }}
+                        <p><strong>Street:</strong> {{ user.address?.street || "Complete your street!"}}</p>
+                        <p><strong>City:</strong> {{ user.address?.city || "Complete your city!" }},
+                            <strong>State:</strong> {{ user.address?.state || "Complete your state!" }},
+                            <strong>Zip Code:</strong> {{ user.address?.zipCode || "Complete your zip code!" }}
                         </p>
-                        <p><strong>Country:</strong> {{ user.address.country || "Complete your country!" }}</p>
+                        <p><strong>Country:</strong> {{ user.address?.country || "Complete your country!" }}</p>
                     </div>
                 </div>
             </div>
