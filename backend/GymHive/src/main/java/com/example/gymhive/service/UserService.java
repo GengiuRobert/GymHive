@@ -45,6 +45,14 @@ public class UserService {
         }
     }
 
+    public String sendEmailVerification(String idToken) throws Exception {
+        try {
+            return userRepository.sendEmailVerification(idToken);
+        }catch (Exception e){
+            throw new Exception("[SERVICE] An error occurred during sendEmailVerification: " + e.getMessage() +"\n\n");
+        }
+    }
+
     public String deleteAccount(String idToken) {
         try {
             return userRepository.deleteAccount(idToken);

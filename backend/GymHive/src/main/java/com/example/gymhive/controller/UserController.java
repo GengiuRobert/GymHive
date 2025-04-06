@@ -6,6 +6,8 @@ import com.example.gymhive.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @CrossOrigin(origins = "http://localhost:4200")
@@ -26,6 +28,13 @@ public class UserController {
     @PostMapping("/login")
     public AuthResponse signIn(@RequestBody User user) throws Exception {
         return userService.logIn(user);
+    }
+
+    @PostMapping("/verify-email")
+    @ResponseBody
+    public String verifyEmail(@RequestBody Map<String, Object> payload) throws Exception {
+        String idToken = payload.get("idToken").toString();
+        return userService.sendEmailVerification(idToken);
     }
 
     @PostMapping("/delete/{idToken}")
