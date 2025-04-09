@@ -12,9 +12,13 @@ import javax.validation.constraints.NotNull;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class CategoryDTO {
+public class SubCategoryDTO {
 
-    @NotBlank(message = "Category name cannot be null or empty")
+    @NotBlank(message = "SubCategory name cannot be null or empty")
     @NotNull
-    private String categoryName;
+    private String subCategoryName;
+
+    @NotBlank(message = "ParentCategory id cannot be null or empty")
+    @NotNull
+    private String parentCategoryId;
 }
