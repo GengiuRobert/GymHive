@@ -17,23 +17,6 @@ public class ProductService {
     }
 
     public String addProduct(Product product) {
-
-        if (product == null) {
-            throw new IllegalArgumentException("product cannot be null");
-        }
-        if (product.getName() == null || product.getName().trim().isEmpty()) {
-            throw new IllegalArgumentException("product name cannot be null or empty");
-        }
-        if (product.getDescription() == null || product.getDescription().trim().isEmpty()) {
-            throw new IllegalArgumentException("product description cannot be null or empty");
-        }
-        if (product.getPrice() == null || product.getPrice() <= 0) {
-            throw new IllegalArgumentException("product price must be greater than 0");
-        }
-        if (product.getCategory() == null || product.getCategory().trim().isEmpty()) {
-            throw new IllegalArgumentException("product category cannot be null or empty");
-        }
-
         Product existingProduct = productRepository.findOneByAllFields(
                 product.getName(),
                 product.getDescription(),

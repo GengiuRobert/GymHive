@@ -1,10 +1,13 @@
 package com.example.gymhive.controller;
 
+import com.example.gymhive.dto.UserProfileDTO;
 import com.example.gymhive.entity.UserProfile;
 import com.example.gymhive.service.UserProfileService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -14,17 +17,18 @@ import java.util.concurrent.ExecutionException;
 public class UserProfileController {
 
     private final UserProfileService userProfileService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public UserProfileController(UserProfileService userProfileService) {
+    public UserProfileController(UserProfileService userProfileService, ModelMapper modelMapper) {
         this.userProfileService = userProfileService;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping("/add-profile")
     @ResponseBody
-    public String addUserProfile(@RequestBody UserProfile userProfile) {
-        System.out.println("[CONTROLLER] Adding user profile: ");
-        System.out.println(userProfile.toString());
+    public String addUserProfile(@Valid @RequestBody UserProfileDTO userProfileDTO) {
+        UserProfile userProfile = modelMapper.map(userProfileDTO, UserProfile.class);
         return this.userProfileService.addUserProfile(userProfile);
     }
 

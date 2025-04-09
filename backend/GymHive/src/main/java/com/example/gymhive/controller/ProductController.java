@@ -1,10 +1,13 @@
 package com.example.gymhive.controller;
 
+import com.example.gymhive.dto.ProductDTO;
 import com.example.gymhive.entity.Product;
 import com.example.gymhive.service.ProductService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 
@@ -14,15 +17,18 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private final ModelMapper modelMapper;
 
     @Autowired
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ModelMapper modelMapper) {
         this.productService = productService;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping("/add-product")
     @ResponseBody
-    public String addProduct(@RequestBody Product product) {
+    public String addProduct(@Valid @RequestBody ProductDTO productDTO) {
+        Product product = modelMapper.map(productDTO, Product.class);
         return this.productService.addProduct(product);
     }
 

@@ -18,25 +18,6 @@ public class UserProfileService {
 
     public String addUserProfile(UserProfile userProfile) {
 
-        if(userProfile == null) {
-            throw new IllegalArgumentException("userProfile cannot be null");
-        }
-        if(userProfile.getUserId() == null || userProfile.getUserId().trim().isEmpty()) {
-            throw new IllegalArgumentException("userProfile userId cannot be null or empty");
-        }
-        if(userProfile.getFirstName() == null || userProfile.getFirstName().trim().isEmpty()) {
-            throw new IllegalArgumentException("userProfile firstName cannot be null or empty");
-        }
-        if(userProfile.getLastName() == null || userProfile.getLastName().trim().isEmpty()) {
-            throw new IllegalArgumentException("userProfile lastName cannot be null or empty");
-        }
-        if(userProfile.getPhone() != null && userProfile.getPhone().trim().isEmpty()) {
-            throw new IllegalArgumentException("userProfile phone cannot be empty if provided");
-        }
-        if(userProfile.getAddress() != null) {
-            throw new IllegalArgumentException("userProfile address cannot be null if provided");
-        }
-
         if(userProfileRepository.findByUserId(userProfile.getUserId()) != null) {
             throw new IllegalArgumentException("userProfile with that ID already exists");
         }
