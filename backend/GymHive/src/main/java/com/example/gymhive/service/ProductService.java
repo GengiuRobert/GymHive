@@ -21,7 +21,9 @@ public class ProductService {
                 product.getName(),
                 product.getDescription(),
                 product.getPrice(),
-                product.getCategory()
+                product.getCategoryId(),
+                product.getSubCategoryId(),
+                product.getImageUrl()
         );
 
         if (existingProduct != null) {

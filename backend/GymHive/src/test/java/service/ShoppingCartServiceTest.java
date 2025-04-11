@@ -36,7 +36,7 @@ public class ShoppingCartServiceTest {
     void testAddShoppingCart() {
         when(shoppingCartRepository.save(shoppingCart)).thenReturn("shoppingCart saved");
 
-        shoppingCart.setProducts(List.of(new Product("1", "Product1", "Description", 50.0, "Category1")));
+        shoppingCart.setProducts(List.of(new Product("1", "Product1", "Description", 50.0, "Category1","SubCategory1","imageUrl1")));
         shoppingCart.setTotalPrice(shoppingCart.calculateTotalPrice(shoppingCart.getProducts()));
         shoppingCart.setTotalItems(shoppingCart.getProducts().size());
 
@@ -56,7 +56,7 @@ public class ShoppingCartServiceTest {
 
     @Test
     void testUpdateShoppingCart() {
-        shoppingCart.setProducts(List.of(new Product("1", "Updated Product", "Updated Desc", 100.0, "Updated Category")));
+        shoppingCart.setProducts(List.of(new Product("1", "Updated Product", "Updated Desc", 100.0, "Updated Category","Updated SubCategory1","imageUrl1")));
         shoppingCart.setTotalPrice(shoppingCart.calculateTotalPrice(shoppingCart.getProducts()));
         shoppingCart.setTotalItems(shoppingCart.getProducts().size());
 
@@ -70,8 +70,8 @@ public class ShoppingCartServiceTest {
 
     @Test
     void testGetAllShoppingCarts() {
-        ShoppingCart sc1 = new ShoppingCart("123", "user1", "user1@example.com", List.of(new Product("1", "Product1", "Desc1", 10.0, "Category1")), 100.0, 2);
-        ShoppingCart sc2 = new ShoppingCart("124", "user2", "user2@example.com", List.of(new Product("2", "Product2", "Desc2", 20.0, "Category2")), 50.0, 1);
+        ShoppingCart sc1 = new ShoppingCart("123", "user1", "user1@example.com", List.of(new Product("1", "Product1", "Desc1", 10.0, "Category1","SubCategory1","imageUrl1")), 100.0, 2);
+        ShoppingCart sc2 = new ShoppingCart("124", "user2", "user2@example.com", List.of(new Product("2", "Product2", "Desc2", 20.0, "Category2","SubCategory1","imageUrl1")), 50.0, 1);
         when(shoppingCartRepository.getAll()).thenReturn(Arrays.asList(sc1, sc2));
 
         List<ShoppingCart> result = shoppingCartService.getAllShoppingCarts();

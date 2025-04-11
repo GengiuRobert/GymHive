@@ -67,8 +67,8 @@ public class ProductServiceTest {
 
     @Test
     void testGetAllProducts() {
-        Product p1 = new Product("101", "P1", "Desc1", 10.0,"Category1");
-        Product p2 = new Product("102", "P2", "Desc2", 20.0,"Category1");
+        Product p1 = new Product("101", "P1", "Desc1", 10.0,"Category1","SubCategory1","imageUrl1");
+        Product p2 = new Product("102", "P2", "Desc2", 20.0,"Category1","SubCategory1","imageUrl1");
         List<Product> mockList = Arrays.asList(p1, p2);
 
         when(productRepository.getAll()).thenReturn(mockList);

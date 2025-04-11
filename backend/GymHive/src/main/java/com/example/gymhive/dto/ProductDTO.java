@@ -25,7 +25,13 @@ public class ProductDTO {
     @DecimalMin(value = "0.01", inclusive = true, message = "Product price must be greater than 0")
     private Double price;
 
-    @NotBlank(message = "Product category cannot be null or empty")
-    private String category;
+    @NotBlank(message = "Product categoryId cannot be null or empty")
+    private String categoryId;
+
+    @NotBlank(message = "Product subCategoryId cannot be null or empty")
+    private String subCategoryId;
+
+    @NotBlank(message = "Product imageUrl cannot be null or empty")
+    private String imageUrl;
 
 }

@@ -60,8 +60,16 @@ public class ProductRepository {
             updates.put("price", updatedProduct.getPrice());
         }
 
-        if (updatedProduct.getCategory() != null && !updatedProduct.getCategory().trim().isEmpty()) {
-            updates.put("category", updatedProduct.getCategory());
+        if (updatedProduct.getCategoryId() != null && !updatedProduct.getCategoryId().trim().isEmpty()) {
+            updates.put("categoryId", updatedProduct.getCategoryId());
+        }
+
+        if (updatedProduct.getSubCategoryId() != null && !updatedProduct.getSubCategoryId().trim().isEmpty()) {
+            updates.put("subCategoryId", updatedProduct.getSubCategoryId());
+        }
+
+        if (updatedProduct.getImageUrl() != null && !updatedProduct.getImageUrl().trim().isEmpty()) {
+            updates.put("imageUrl", updatedProduct.getImageUrl());
         }
 
         if (updates.isEmpty()) {
@@ -86,13 +94,16 @@ public class ProductRepository {
         }
     }
 
-    public Product findOneByAllFields(String name, String description, Double price, String category) {
+    public Product findOneByAllFields(String name, String description, Double price, String categoryId, String subCategoryId,String imageUrl) {
         CollectionReference collection = firestoreService.getCollection("products");
 
         Query query = collection.whereEqualTo("name", name)
                 .whereEqualTo("description", description)
                 .whereEqualTo("price", price)
-                .whereEqualTo("category", category)
+                .whereEqualTo("categoryId", categoryId)
+                .whereEqualTo("subCategoryId", subCategoryId)
+                .whereEqualTo("subCategoryId", subCategoryId)
+                .whereEqualTo("imageUrl", imageUrl)
                 .limit(1);
         ApiFuture<QuerySnapshot> querySnapshot = query.get();
 

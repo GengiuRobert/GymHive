@@ -102,7 +102,7 @@ export class CategoryService {
         {
             name: "Nutrition",
             link: "/category/nutrition",
-            subcategories: ["Meal Plans", "Snacks", "Drinks", "Healthy Foods", "Recipes", "Diet Plans"],
+            subcategories: ["Meal Plans", "Snacks", "Drinks", "Healthy Foods", "Recipes"],
             featured: [
                 {
                     title: "Meal Prep",

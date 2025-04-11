@@ -110,8 +110,8 @@ public class ProductRepositoryTest {
         QueryDocumentSnapshot doc1 = mock(QueryDocumentSnapshot.class);
         QueryDocumentSnapshot doc2 = mock(QueryDocumentSnapshot.class);
 
-        Product p1 = new Product("abc", "Name1", "Desc1", 10.0,"Category1");
-        Product p2 = new Product("xyz", "Name2", "Desc2", 20.0,"Category2");
+        Product p1 = new Product("abc", "Name1", "Desc1", 10.0,"Category1","SubCategory1","imageUrl1");
+        Product p2 = new Product("xyz", "Name2", "Desc2", 20.0,"Category2","SubCategory2","imageUrl2");
 
         when(doc1.toObject(Product.class)).thenReturn(p1);
         when(doc2.toObject(Product.class)).thenReturn(p2);
@@ -130,7 +130,7 @@ public class ProductRepositoryTest {
 
     @Test
     void testFindOneByAllFieldsFound() throws ExecutionException, InterruptedException {
-        Product expectedProduct = new Product("id123", "Test Product", "Test Description",100.0, "Test Category");
+        Product expectedProduct = new Product("id123", "Test Product", "Test Description",100.0, "Test Category","Test SubCategory","Test imageUrl");
 
         when(collectionReference.whereEqualTo("name", expectedProduct.getName())).thenReturn(query);
         when(query.whereEqualTo("description", expectedProduct.getDescription())).thenReturn(query);
@@ -146,7 +146,7 @@ public class ProductRepositoryTest {
         when(querySnapshot.getDocuments()).thenReturn(docList);
         when(docSnapshot.toObject(Product.class)).thenReturn(expectedProduct);
 
-        Product result = productRepository.findOneByAllFields(expectedProduct.getName(), expectedProduct.getDescription(), expectedProduct.getPrice(),expectedProduct.getCategory());
+        Product result = productRepository.findOneByAllFields(expectedProduct.getName(), expectedProduct.getDescription(), expectedProduct.getPrice(),expectedProduct.getCategoryId(),expectedProduct.getSubCategoryId(),expectedProduct.getImageUrl());
         assertNotNull(result, "Expected a product to be returned");
         assertEquals(expectedProduct.getName(), result.getName(), "Product name should match");
         assertEquals(expectedProduct.getDescription(), result.getDescription(), "Product description should match");
@@ -163,7 +163,7 @@ public class ProductRepositoryTest {
         when(queryFuture.get()).thenReturn(querySnapshot);
         when(querySnapshot.getDocuments()).thenReturn(new ArrayList<>());
 
-        Product result = productRepository.findOneByAllFields("NonExistent", "No Desc", 0.0,"No Category");
+        Product result = productRepository.findOneByAllFields("NonExistent", "No Desc", 0.0,"No Category","No SubCategory","No imageUrl");
         assertNull(result, "Expected null when no product is found");
     }
 
