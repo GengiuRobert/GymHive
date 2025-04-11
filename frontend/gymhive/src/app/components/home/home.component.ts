@@ -34,9 +34,8 @@ export class HomeComponent implements OnInit {
     { name: "Nutrition", link: "/category/nutrition" },
   ]
 
-
   ngOnInit(): void {
-    console.log("Simple home component initialized")
+    console.log("Simple home component initialized");
   }
 
 

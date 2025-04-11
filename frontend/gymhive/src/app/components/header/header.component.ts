@@ -4,10 +4,9 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { Subscription } from 'rxjs';
 
-import { CategoryItem } from '../category-display/category-display.component';
+import { SidebarItem } from '../../models/categorySidebarItem.model';
 
 import { UserService } from '../../services/user.service';
-import { CategoryService } from '../../services/category.service';
 
 @Component({
   selector: 'app-header',
@@ -42,7 +41,7 @@ export class HeaderComponent implements OnInit {
   searchQuery = ""
   isAuthenticated = false;
   private userSub!: Subscription;
-  activeCategory: CategoryItem | null = null
+  activeCategory: SidebarItem | null = null
 
   constructor(private userService: UserService) { }
 

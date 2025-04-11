@@ -3,23 +3,6 @@ import { CommonModule } from "@angular/common"
 import { ActivatedRoute, RouterModule } from "@angular/router"
 import { CategorySidebarComponent } from "../category-sidebar/category-sidebar.component"
 
-export interface CategoryItem {
-  name: string
-  link: string
-  subcategories: string[]
-  featured?: {
-    title: string
-    image: string
-    link: string
-  }[]
-  popularProducts?: {
-    name: string
-    image: string
-    price: number
-    link: string
-  }[]
-}
-
 @Component({
   selector: "app-category-display",
   standalone: true,
