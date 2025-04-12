@@ -2,7 +2,9 @@ import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { ActivatedRoute, RouterModule } from "@angular/router"
 import { catchError, forkJoin, of, switchMap } from "rxjs"
+
 import { CategorySidebarComponent } from "../category-sidebar/category-sidebar.component"
+import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component"
 
 import { Product } from "../../models/product.model"
 import { Category } from "../../models/category.model"
@@ -15,7 +17,7 @@ import { SubCategoryService } from "../../services/subCategory.service"
 @Component({
   selector: "app-category-display",
   standalone: true,
-  imports: [CommonModule, RouterModule, CategorySidebarComponent],
+  imports: [CommonModule, RouterModule, CategorySidebarComponent, ProductDetailsModalComponent],
   templateUrl: "./category-display.component.html",
   styleUrls: ["./category-display.component.css"],
 })
@@ -29,6 +31,8 @@ export class CategoryDisplayComponent {
   currentSubCategory: SubCategory | undefined
   currentSubCategories: SubCategory[] = []
   products: Product[] = []
+  selectedProduct: Product | null = null
+  isModalOpen = false
 
   constructor(private route: ActivatedRoute,
     private productService: ProductService,
@@ -84,6 +88,15 @@ export class CategoryDisplayComponent {
       .subscribe((products) => {
         this.filterAndDisplayProducts(products)
       })
+  }
+
+  openProductDetails(product: Product): void {
+    this.selectedProduct = product
+    this.isModalOpen = true
+  }
+
+  closeModal(): void {
+    this.isModalOpen = false
   }
 
   private filterAndDisplayProducts(allProducts: Product[]): void {
