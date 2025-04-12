@@ -1,7 +1,16 @@
 import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { ActivatedRoute, RouterModule } from "@angular/router"
+import { catchError, forkJoin, of, switchMap } from "rxjs"
 import { CategorySidebarComponent } from "../category-sidebar/category-sidebar.component"
+
+import { Product } from "../../models/product.model"
+import { Category } from "../../models/category.model"
+import { SubCategory } from "../../models/subCategory.model"
+
+import { ProductService } from "../../services/crudproducts.service"
+import { CategoryService } from "../../services/category.service"
+import { SubCategoryService } from "../../services/subCategory.service"
 
 @Component({
   selector: "app-category-display",
@@ -16,59 +25,114 @@ export class CategoryDisplayComponent {
   featured: string | null = null
   categoryTitle = ""
   featuredTitle = ""
+  currentCategory: Category | undefined
+  currentSubCategory: SubCategory | undefined
+  currentSubCategories: SubCategory[] = []
+  products: Product[] = []
 
-  dummyProducts = [
-    {
-      id: 1,
-      name: "Premium Dumbbell Set",
-      price: 129.99,
-      image: "assets/image_1.png",
-    },
-    {
-      id: 2,
-      name: "Protein Powder",
-      price: 49.99,
-      image: "assets/image_12.png",
-    },
-    {
-      id: 3,
-      name: "Adjustable Bench",
-      price: 179.99,
-      image: "assets/image_1.png",
-    },
-    {
-      id: 4,
-      name: "Resistance Bands",
-      price: 29.99,
-      image: "assets/image_12.png",
-    },
-    {
-      id: 5,
-      name: "Kettlebell Set",
-      price: 89.99,
-      image: "assets/image_1.png",
-    },
-    {
-      id: 6,
-      name: "Yoga Mat",
-      price: 24.99,
-      image: "assets/image_12.png",
-    },
-  ]
-
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute,
+    private productService: ProductService,
+    private categoryService: CategoryService,
+    private subCategoryService: SubCategoryService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.subcategory = params.get("subcategory")
+      this.loadData()
     })
 
     this.route.data.subscribe((data) => {
       this.categoryType = data["categoryType"] || ""
       this.featured = data["featured"] || null
-
       this.setCategoryTitle()
+      this.loadData()
     })
+  }
+
+  private loadData(): void {
+    if (!this.categoryType) return
+
+    forkJoin({
+      categories: this.categoryService.getAllCategories(),
+      subcategories: this.subCategoryService.getAllSubCategories(),
+    })
+      .pipe(
+        catchError((err) => {
+          console.error("Error loading categories:", err)
+          return of({ categories: [], subcategories: [] })
+        }),
+        switchMap(({ categories, subcategories }) => {
+
+          this.currentCategory = categories.find(
+            (c) => c.categoryName.toLowerCase() === this.categoryType.toLowerCase(),
+          )
+
+          if (this.currentCategory) {
+            this.currentSubCategories = subcategories.filter(
+              (sc) => sc.parentCategoryId === this.currentCategory?.categoryId,
+            )
+          }
+
+          return this.productService.getAllProducts().pipe(
+            catchError((err) => {
+              console.error("Error loading products:", err)
+              return of([])
+            }),
+          )
+        }),
+      )
+      .subscribe((products) => {
+        this.filterAndDisplayProducts(products)
+      })
+  }
+
+  private filterAndDisplayProducts(allProducts: Product[]): void {
+
+    let filteredProducts = allProducts
+
+    if (this.currentCategory) {
+      filteredProducts = filteredProducts.filter((p) => p.categoryId === this.currentCategory?.categoryId)
+
+      if (this.subcategory && this.currentSubCategories.length > 0) {
+        const subCategory = this.currentSubCategories.find(
+          (sc) => sc.subCategoryName.toLowerCase() === this.subcategory?.toLowerCase(),
+        )
+
+        if (subCategory) {
+          filteredProducts = filteredProducts.filter((p) => p.subCategoryId === subCategory.subCategoryId)
+        }
+      }
+    }
+
+    if (filteredProducts.length === 0) {
+      filteredProducts = allProducts.slice(0, 6)
+    }
+
+    this.products = filteredProducts.map((product, index) => ({
+      ...product,
+      imageUrl: this.buildImageUrl(product, index),
+    }))
+  }
+
+  private buildImageUrl(product: Product, index: number): string {
+    const catName = this.currentCategory?.categoryName.toLowerCase()
+
+    let imagePath = ''
+
+    if (this.subcategory) {
+      const subCatName = this.subcategory.toLowerCase().replace(/\s+/g, "_")
+      imagePath =  `assets/${catName}/${subCatName}/${subCatName}${(index % 6) + 1}.jpg`
+    }
+
+    const subCategory = this.currentSubCategories.find((sc) => sc.subCategoryId === product.subCategoryId)
+
+    if (subCategory) {
+      const subCatName = subCategory.subCategoryName.toLowerCase().replace(/\s+/g, "_")
+      imagePath =  `assets/${catName}/${subCatName}/${subCatName}${(index % 6) + 1}.jpg`
+    }
+
+    return imagePath
+
   }
 
   private setCategoryTitle(): void {
@@ -110,5 +174,6 @@ export class CategoryDisplayComponent {
       this.categoryTitle = formattedCategoryType
     }
   }
+
 }
 

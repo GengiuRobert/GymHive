@@ -2,7 +2,11 @@
     background-color: #2a2a2a;
     border-radius: 8px;
     padding: 1.5rem;
-    height: 100%;
+    height: auto;
+    max-height: 100vh;
+    overflow-y: auto;
+    position: sticky;
+    top: 100px;
 }
 
 .category-sidebar h2 {
@@ -17,6 +21,10 @@
     margin-bottom: 2rem;
 }
 
+.sidebar-section:empty {
+    display: none;
+}
+
 .sidebar-section h3 {
     font-size: 1.1rem;
     color: #ff6b00;
@@ -27,6 +35,10 @@
     list-style: none;
     padding: 0;
     margin: 0;
+}
+
+.sidebar-list:empty {
+    display: none;
 }
 
 .sidebar-list li {
@@ -76,8 +88,22 @@
     accent-color: #ff6b00;
 }
 
+.loading-spinner {
+    color: #cccccc;
+    text-align: center;
+    padding: 1rem 0;
+}
+
+.error-message {
+    color: #ff6b00;
+    text-align: center;
+    padding: 1rem 0;
+}
+
 @media (max-width: 768px) {
     .category-sidebar {
         margin-bottom: 1.5rem;
+        max-height: none;
+        position: static;
     }
 }
