@@ -104,31 +104,27 @@ export class CategoryDisplayComponent {
       }
     }
 
-    if (filteredProducts.length === 0) {
-      filteredProducts = allProducts.slice(0, 6)
-    }
-
-    this.products = filteredProducts.map((product, index) => ({
+    this.products = filteredProducts.map((product) => ({
       ...product,
-      imageUrl: this.buildImageUrl(product, index),
+      imageUrl: this.buildImageUrl(product, product.imageUrl),
     }))
   }
 
-  private buildImageUrl(product: Product, index: number): string {
+  private buildImageUrl(product: Product, imgUrl: string): string {
     const catName = this.currentCategory?.categoryName.toLowerCase()
 
     let imagePath = ''
 
     if (this.subcategory) {
       const subCatName = this.subcategory.toLowerCase().replace(/\s+/g, "_")
-      imagePath =  `assets/${catName}/${subCatName}/${subCatName}${(index % 6) + 1}.jpg`
+      imagePath = `assets/${catName}/${subCatName}/${imgUrl}`
     }
 
     const subCategory = this.currentSubCategories.find((sc) => sc.subCategoryId === product.subCategoryId)
 
     if (subCategory) {
       const subCatName = subCategory.subCategoryName.toLowerCase().replace(/\s+/g, "_")
-      imagePath =  `assets/${catName}/${subCatName}/${subCatName}${(index % 6) + 1}.jpg`
+      imagePath = `assets/${catName}/${subCatName}/${imgUrl}`
     }
 
     return imagePath
