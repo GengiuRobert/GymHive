@@ -53,5 +53,14 @@ export class CategoryService {
             })
         );
     }
+
+    getCategoryNameByCategoryId(categoryId: string): Observable<string> {
+        return this.getAllCategories().pipe(
+            map((categories: Category[]) => {
+                const category = categories.find(cat => cat.categoryId === categoryId);
+                return category ? category.categoryName : "";
+            })
+        );
+    }
 }
 
