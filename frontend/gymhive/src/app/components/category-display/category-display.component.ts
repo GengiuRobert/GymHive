@@ -1,10 +1,11 @@
 import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { ActivatedRoute, RouterModule } from "@angular/router"
-import { catchError, forkJoin, of, switchMap } from "rxjs"
+import { catchError, finalize, forkJoin, of, switchMap } from "rxjs"
 
 import { CategorySidebarComponent } from "../category-sidebar/category-sidebar.component"
 import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component"
+import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component"
 
 import { Product } from "../../models/product.model"
 import { Category } from "../../models/category.model"
@@ -13,11 +14,13 @@ import { SubCategory } from "../../models/subCategory.model"
 import { ProductService } from "../../services/crudproducts.service"
 import { CategoryService } from "../../services/category.service"
 import { SubCategoryService } from "../../services/subCategory.service"
+import { SpinnerService } from "../../services/spinner.service"
+
 
 @Component({
   selector: "app-category-display",
   standalone: true,
-  imports: [CommonModule, RouterModule, CategorySidebarComponent, ProductDetailsModalComponent],
+  imports: [CommonModule, RouterModule, CategorySidebarComponent, ProductDetailsModalComponent, LoadingSpinnerComponent],
   templateUrl: "./category-display.component.html",
   styleUrls: ["./category-display.component.css"],
 })
@@ -37,7 +40,8 @@ export class CategoryDisplayComponent {
   constructor(private route: ActivatedRoute,
     private productService: ProductService,
     private categoryService: CategoryService,
-    private subCategoryService: SubCategoryService) { }
+    private subCategoryService: SubCategoryService,
+    private spinnerService: SpinnerService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -54,7 +58,10 @@ export class CategoryDisplayComponent {
   }
 
   private loadData(): void {
+
     if (!this.categoryType) return
+
+    this.spinnerService.showSpinner()
 
     forkJoin({
       categories: this.categoryService.getAllCategories(),
@@ -84,6 +91,7 @@ export class CategoryDisplayComponent {
             }),
           )
         }),
+        finalize(() => this.spinnerService.hideSpinner())
       )
       .subscribe((products) => {
         this.filterAndDisplayProducts(products)
