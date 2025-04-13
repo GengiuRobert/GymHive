@@ -14,18 +14,6 @@
         </ul>
     </div>
 
-    <!-- Featured Links -->
-    <div class="sidebar-section">
-        <h3>Featured</h3>
-        <ul class="sidebar-list">
-            <li *ngFor="let item of category?.featured || []">
-                <a [routerLink]="item.link" [class.active]="currentUrl === item.link">
-                    {{ item.title }}
-                </a>
-            </li>
-        </ul>
-    </div>
-
     <!-- Filter Section -->
     <div class="sidebar-section" *ngIf="showFilters">
         <h3>Filter By</h3>
@@ -34,21 +22,21 @@
             <h4>Price Range</h4>
             <div class="filter-options">
                 <label>
-                    <input type="checkbox" name="price" value="under25"> Under $25
+                    <input type="checkbox" name="price" value="under25" (change)="onPriceFilterChange($event)"> Under $25
                 </label>
                 <label>
-                    <input type="checkbox" name="price" value="25to50"> $25 - $50
+                    <input type="checkbox" name="price" value="25to50" (change)="onPriceFilterChange($event)"> $25 - $50
                 </label>
                 <label>
-                    <input type="checkbox" name="price" value="50to100"> $50 - $100
+                    <input type="checkbox" name="price" value="50to100" (change)="onPriceFilterChange($event)"> $50 - $100
                 </label>
                 <label>
-                    <input type="checkbox" name="price" value="over100"> Over $100
+                    <input type="checkbox" name="price" value="over100" (change)="onPriceFilterChange($event)"> Over $100
                 </label>
             </div>
         </div>
 
-        <div class="filter-group">
+        <!-- <div class="filter-group">
             <h4>Brand</h4>
             <div class="filter-options">
                 <label>
@@ -64,6 +52,6 @@
                     <input type="checkbox" name="brand" value="gymshark"> GymShark
                 </label>
             </div>
-        </div>
+        </div> -->
     </div>
 </div>

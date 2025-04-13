@@ -27,15 +27,15 @@ import { SpinnerService } from "../../services/spinner.service"
 export class CategoryDisplayComponent {
   categoryType = ""
   subcategory: string | null = null
-  featured: string | null = null
   categoryTitle = ""
-  featuredTitle = ""
   currentCategory: Category | undefined
   currentSubCategory: SubCategory | undefined
   currentSubCategories: SubCategory[] = []
   products: Product[] = []
+  productsCopy: Product[] = []
   selectedProduct: Product | null = null
   isModalOpen = false
+  selectedPriceFilters: string[] = [];
 
   constructor(private route: ActivatedRoute,
     private productService: ProductService,
@@ -51,7 +51,6 @@ export class CategoryDisplayComponent {
 
     this.route.data.subscribe((data) => {
       this.categoryType = data["categoryType"] || ""
-      this.featured = data["featured"] || null
       this.setCategoryTitle()
       this.loadData()
     })
@@ -96,15 +95,7 @@ export class CategoryDisplayComponent {
       .subscribe((products) => {
         this.filterAndDisplayProducts(products)
       })
-  }
 
-  openProductDetails(product: Product): void {
-    this.selectedProduct = product
-    this.isModalOpen = true
-  }
-
-  closeModal(): void {
-    this.isModalOpen = false
   }
 
   private filterAndDisplayProducts(allProducts: Product[]): void {
@@ -129,6 +120,8 @@ export class CategoryDisplayComponent {
       ...product,
       imageUrl: this.buildImageUrl(product, product.imageUrl),
     }))
+
+    this.productsCopy = this.products
   }
 
   private buildImageUrl(product: Product, imgUrl: string): string {
@@ -152,44 +145,56 @@ export class CategoryDisplayComponent {
 
   }
 
+  onPriceFiltersChanged(filters: string[]): void {
+    this.selectedPriceFilters = filters;
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
+    if (!this.selectedPriceFilters || this.selectedPriceFilters.length === 0) {
+      this.products = this.productsCopy
+      return;
+    }
+    else {
+      this.products = this.productsCopy
+        .filter(product => this.selectedPriceFilters
+        .some(filter => this.inPriceRange(product.price, filter)))
+    }
+  }
+
+  inPriceRange(price: number, filter: string): boolean {
+    switch (filter) {
+      case "under25":
+        return price < 25;
+      case "25to50":
+        return price >= 25 && price <= 50;
+      case "50to100":
+        return price > 50 && price <= 100;
+      case "over100":
+        return price > 100;
+      default:
+        return true;
+    }
+  }
+
   private setCategoryTitle(): void {
     const formattedCategoryType = this.categoryType.charAt(0).toUpperCase() + this.categoryType.slice(1)
 
     if (this.subcategory) {
       const formattedSubcategory = this.subcategory.charAt(0).toUpperCase() + this.subcategory.slice(1)
       this.categoryTitle = `${formattedSubcategory} ${formattedCategoryType}`
-    } else if (this.featured) {
-      switch (this.featured) {
-        case "new":
-          this.featuredTitle = "New Arrivals"
-          this.categoryTitle = `New ${formattedCategoryType}`
-          break
-        case "best-sellers":
-          this.featuredTitle = "Best Sellers"
-          this.categoryTitle = `Best Selling ${formattedCategoryType}`
-          break
-        case "top-rated":
-          this.featuredTitle = "Top Rated Products"
-          this.categoryTitle = `Top Rated ${formattedCategoryType}`
-          break
-        case "essentials":
-          this.featuredTitle = "Workout Essentials"
-          this.categoryTitle = `${formattedCategoryType} Essentials`
-          break
-        case "meal-prep":
-          this.featuredTitle = "Meal Prep Solutions"
-          this.categoryTitle = `Meal Prep ${formattedCategoryType}`
-          break
-        case "snacks":
-          this.featuredTitle = "Healthy Snacks"
-          this.categoryTitle = `Healthy ${formattedCategoryType} Snacks`
-          break
-        default:
-          this.categoryTitle = formattedCategoryType
-      }
     } else {
       this.categoryTitle = formattedCategoryType
     }
+  }
+
+  openProductDetails(product: Product): void {
+    this.selectedProduct = product
+    this.isModalOpen = true
+  }
+
+  closeModal(): void {
+    this.isModalOpen = false
   }
 
 }

@@ -6,15 +6,17 @@
         <h1>{{ categoryTitle }}</h1>
         <p *ngIf="subcategory" style="color:rgb(255, 255, 255);">Browse our selection of {{ subcategory }} {{
             categoryType }} </p>
-        <p *ngIf="featured" style="color:rgb(255, 255, 255);">Explore our {{ featuredTitle }}</p>
-        <p *ngIf="!subcategory && !featured" style="color:rgb(255, 255, 255);">Browse our complete selection of {{
+        <p *ngIf="!subcategory" style="color:rgb(255, 255, 255);">Browse our complete selection of {{
             categoryType }}</p>
     </div>
 
     <div class="category-layout">
         <div class="sidebar">
-            <app-category-sidebar [categoryType]="categoryType"
-                [activeSubcategory]="subcategory || featured"></app-category-sidebar>
+            <app-category-sidebar 
+            [categoryType]="categoryType"
+            [activeSubcategory]="subcategory"
+            (priceFiltersChanged)="onPriceFiltersChanged($event)">
+            </app-category-sidebar>
         </div>
 
         <div class="main-content">

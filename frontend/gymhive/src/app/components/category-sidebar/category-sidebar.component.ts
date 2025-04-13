@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import { CategoryService } from '../../services/category.service';
@@ -17,6 +17,9 @@ export class CategorySidebarComponent implements OnInit {
   @Input() activeSubcategory: string | null = null
   @Input() showFilters = true
 
+  @Output() priceFiltersChanged = new EventEmitter<string[]>();
+  selectedPriceFilters: string[] = [];
+
   category: SidebarItem | undefined
   currentUrl = ""
 
@@ -33,5 +36,27 @@ export class CategorySidebarComponent implements OnInit {
     });
 
     this.currentUrl = window.location.pathname;
+  }
+
+  onPriceFilterChange(event: Event): void {
+
+    const input = event.target as HTMLInputElement
+
+    if (!input) {
+      return;
+    }
+
+    const value = input.value
+    const isChecked = input.checked
+
+    if (isChecked) {
+      if (!this.selectedPriceFilters.includes(value)) {
+        this.selectedPriceFilters.push(value)
+      }
+    } else {
+      this.selectedPriceFilters = this.selectedPriceFilters.filter(f => f !== value)
+    }
+
+    this.priceFiltersChanged.emit(this.selectedPriceFilters)
   }
 }
