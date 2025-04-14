@@ -45,7 +45,7 @@ export class HomeComponent implements OnInit {
   }
 
   loadData() {
-    this.productsService.getTwoRandomProducts().subscribe((randomProds) => {
+    this.productsService.getTwoRandomProducts().pipe(finalize(() => this.spinnerService.hideSpinner())).subscribe((randomProds) => {
 
       const imageUrlOperations = randomProds.map((product) => {
         return forkJoin({
