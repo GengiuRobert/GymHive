@@ -11,7 +11,6 @@ export class SubCategoryService {
 
     private baseUrl = 'http://localhost:8080/subcategories';
     private ALL_SUBCATEGORIES_KEY = 'ALL_SUBCATEGORIES';
-    private survive_24H = 24 * 60 * 60 * 1000;
 
     constructor(private http: HttpClient, private cacheService: CacheService) { }
 
@@ -20,16 +19,16 @@ export class SubCategoryService {
         const cachedSubCategories = this.cacheService.getDataFromCache<SubCategory[]>(this.ALL_SUBCATEGORIES_KEY)
 
         if (cachedSubCategories != null) {
+            console.log("SUB_CATEGORIES from CACHE")
             return of(cachedSubCategories);
         }
 
         const my_url = this.baseUrl + '/get-all-subcategories'
 
-        return this.http.get<SubCategory[]>(my_url).pipe(
-            tap((subCategories) => {
-                this.cacheService.setDataToCache(this.ALL_SUBCATEGORIES_KEY, subCategories, this.survive_24H)
-            })
-        );
+        //console.log("SUB_CATEGORIES from FETCH FIREBASE")
+
+
+        return this.http.get<SubCategory[]>(my_url)
     }
 
     getSubCategoryNameByCategoryId(subCategoryId: string): Observable<string> {

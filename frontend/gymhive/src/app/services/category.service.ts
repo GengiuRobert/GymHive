@@ -16,7 +16,6 @@ export class CategoryService {
 
     private baseUrl = 'http://localhost:8080/categories';
     private ALL_CATEGORIES_KEY = 'ALL_CATEGORIES';
-    private survive_24H = 24 * 60 * 60 * 1000;
 
     constructor(private http: HttpClient, private subCategoryService: SubCategoryService, private cacheService: CacheService) { }
 
@@ -25,16 +24,15 @@ export class CategoryService {
         const cachedCategories = this.cacheService.getDataFromCache<Category[]>(this.ALL_CATEGORIES_KEY)
 
         if (cachedCategories != null) {
+            console.log("CATEGORIES from CACHE")
             return of(cachedCategories);
         }
 
+        console.log("CATEGORIES from FETCH FIREBASE")
+
         const my_url = this.baseUrl + '/get-all-categories'
 
-        return this.http.get<Category[]>(my_url).pipe(
-            tap((categories) => {
-                this.cacheService.setDataToCache(this.ALL_CATEGORIES_KEY, categories, this.survive_24H)
-            })
-        );
+        return this.http.get<Category[]>(my_url)
     }
 
     getSidebarItems(): Observable<SidebarItem[]> {

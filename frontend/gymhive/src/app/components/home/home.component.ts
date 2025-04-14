@@ -1,9 +1,11 @@
 import { Component, inject, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
-import { finalize, forkJoin } from "rxjs";
+import { finalize, forkJoin, Observable } from "rxjs";
 
 import { Product } from "../../models/product.model"
+import { Category } from "../../models/category.model";
+import { SubCategory } from "../../models/subCategory.model";
 
 import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component";
 import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
@@ -12,6 +14,7 @@ import { ProductService } from "../../services/crudproducts.service";
 import { CategoryService } from "../../services/category.service";
 import { SubCategoryService } from "../../services/subCategory.service";
 import { SpinnerService } from "../../services/spinner.service";
+import { CacheManagerService } from "../../services/cache-manager.service";
 
 @Component({
   selector: "app-home",
@@ -38,13 +41,24 @@ export class HomeComponent implements OnInit {
   private categoryService = inject(CategoryService)
   private subCategoryService = inject(SubCategoryService)
   private spinnerService = inject(SpinnerService)
+  private cacheManager = inject(CacheManagerService)
 
   ngOnInit(): void {
     this.spinnerService.showSpinner()
-    this.loadData()
+    
+    this.cacheManager.refreshAllData().subscribe({
+      next: (wasRefreshed) => {
+        console.log(wasRefreshed ? "Data was refreshed from API" : "Using cached data")
+        this.loadFeaturedProducstShowcase()
+      },
+      error: (err) => {
+        console.error("Error refreshing cache:", err)
+        this.loadFeaturedProducstShowcase() 
+      },
+    })
   }
 
-  loadData() {
+  loadFeaturedProducstShowcase() {
     this.productsService.getTwoRandomProducts().pipe(finalize(() => this.spinnerService.hideSpinner())).subscribe((randomProds) => {
 
       const imageUrlOperations = randomProds.map((product) => {
@@ -79,5 +93,6 @@ export class HomeComponent implements OnInit {
   closeModal(): void {
     this.isModalOpen = false
   }
+
 
 }

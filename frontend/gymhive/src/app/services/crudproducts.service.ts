@@ -14,7 +14,6 @@ export class ProductService {
 
     private baseUrl = 'http://localhost:8080/products';
     private ALL_PRODUCTS_KEY = 'ALL_PRODUCTS';
-    private survive_24H = 24 * 60 * 60 * 1000;
 
     constructor(private http: HttpClient, private cacheService: CacheService) { }
 
@@ -23,16 +22,16 @@ export class ProductService {
         const cachedProducts = this.cacheService.getDataFromCache<Product[]>(this.ALL_PRODUCTS_KEY)
 
         if (cachedProducts != null) {
+            console.log("PRODUCTS from CACHE")
             return of(cachedProducts);
         }
 
         const my_url = this.baseUrl + "/get-all-products";
 
-        return this.http.get<Product[]>(my_url).pipe(
-            tap((products) => {
-                this.cacheService.setDataToCache(this.ALL_PRODUCTS_KEY, products, this.survive_24H)
-            })
-        );
+        console.log("PRODUCTS from FETCH FIREBASE")
+
+
+        return this.http.get<Product[]>(my_url)
     }
 
     addProduct(product: Product): Observable<string> {
