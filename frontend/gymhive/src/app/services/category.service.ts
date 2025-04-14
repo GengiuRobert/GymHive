@@ -1,11 +1,13 @@
 import { Injectable } from "@angular/core"
 import { HttpClient } from "@angular/common/http";
-import { forkJoin, map, Observable } from "rxjs";
+import { forkJoin, map, Observable, of, tap } from "rxjs";
 
 import { SubCategoryService } from "./subCategory.service";
+import { CacheService } from "./cachedata.service";
 
 import { Category } from "../models/category.model";
 import { SidebarItem } from "../models/categorySidebarItem.model";
+
 
 @Injectable({
     providedIn: "root",
@@ -13,13 +15,26 @@ import { SidebarItem } from "../models/categorySidebarItem.model";
 export class CategoryService {
 
     private baseUrl = 'http://localhost:8080/categories';
+    private ALL_CATEGORIES_KEY = 'ALL_CATEGORIES';
+    private survive_24H = 24 * 60 * 60 * 1000;
 
-    constructor(private http: HttpClient, private subCategoryService: SubCategoryService) { }
+    constructor(private http: HttpClient, private subCategoryService: SubCategoryService, private cacheService: CacheService) { }
 
     getAllCategories(): Observable<Category[]> {
-        let my_url = this.baseUrl + '/get-all-categories'
 
-        return this.http.get<Category[]>(my_url);
+        const cachedCategories = this.cacheService.getDataFromCache<Category[]>(this.ALL_CATEGORIES_KEY)
+
+        if (cachedCategories != null) {
+            return of(cachedCategories);
+        }
+
+        const my_url = this.baseUrl + '/get-all-categories'
+
+        return this.http.get<Category[]>(my_url).pipe(
+            tap((categories) => {
+                this.cacheService.setDataToCache(this.ALL_CATEGORIES_KEY, categories, this.survive_24H)
+            })
+        );
     }
 
     getSidebarItems(): Observable<SidebarItem[]> {

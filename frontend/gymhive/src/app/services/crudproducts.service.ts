@@ -1,20 +1,38 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { map, Observable } from "rxjs";
+import { map, Observable, of, tap } from "rxjs";
+
 import { Product } from "../models/product.model";
+
+import { CacheService } from "./cachedata.service";
 
 @Injectable({
     providedIn: 'root'
 })
 
 export class ProductService {
-    private baseUrl = 'http://localhost:8080/products';
 
-    constructor(private http: HttpClient) { }
+    private baseUrl = 'http://localhost:8080/products';
+    private ALL_PRODUCTS_KEY = 'ALL_PRODUCTS';
+    private survive_24H = 24 * 60 * 60 * 1000;
+
+    constructor(private http: HttpClient, private cacheService: CacheService) { }
 
     getAllProducts(): Observable<Product[]> {
-        let my_url = this.baseUrl + "/get-all-products";
-        return this.http.get<Product[]>(my_url);
+
+        const cachedProducts = this.cacheService.getDataFromCache<Product[]>(this.ALL_PRODUCTS_KEY)
+
+        if (cachedProducts != null) {
+            return of(cachedProducts);
+        }
+
+        const my_url = this.baseUrl + "/get-all-products";
+
+        return this.http.get<Product[]>(my_url).pipe(
+            tap((products) => {
+                this.cacheService.setDataToCache(this.ALL_PRODUCTS_KEY, products, this.survive_24H)
+            })
+        );
     }
 
     addProduct(product: Product): Observable<string> {
