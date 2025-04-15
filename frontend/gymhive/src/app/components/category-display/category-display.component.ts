@@ -116,33 +116,8 @@ export class CategoryDisplayComponent {
       }
     }
 
-    this.products = filteredProducts.map((product) => ({
-      ...product,
-      imageUrl: this.buildImageUrl(product, product.imageUrl),
-    }))
-
+    this.products = filteredProducts
     this.productsCopy = this.products
-  }
-
-  private buildImageUrl(product: Product, imgUrl: string): string {
-    const catName = this.currentCategory?.categoryName.toLowerCase()
-
-    let imagePath = ''
-
-    if (this.subcategory) {
-      const subCatName = this.subcategory.toLowerCase().replace(/\s+/g, "_")
-      imagePath = `assets/${catName}/${subCatName}/${imgUrl}`
-    }
-
-    const subCategory = this.currentSubCategories.find((sc) => sc.subCategoryId === product.subCategoryId)
-
-    if (subCategory) {
-      const subCatName = subCategory.subCategoryName.toLowerCase().replace(/\s+/g, "_")
-      imagePath = `assets/${catName}/${subCatName}/${imgUrl}`
-    }
-
-    return imagePath
-
   }
 
   onPriceFiltersChanged(filters: string[]): void {
@@ -158,7 +133,7 @@ export class CategoryDisplayComponent {
     else {
       this.products = this.productsCopy
         .filter(product => this.selectedPriceFilters
-        .some(filter => this.inPriceRange(product.price, filter)))
+          .some(filter => this.inPriceRange(product.price, filter)))
     }
   }
 

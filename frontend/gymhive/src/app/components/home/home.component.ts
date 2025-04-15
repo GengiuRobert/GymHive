@@ -1,18 +1,14 @@
 import { Component, inject, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
-import { finalize, forkJoin, Observable } from "rxjs";
+import { finalize } from "rxjs";
 
 import { Product } from "../../models/product.model"
-import { Category } from "../../models/category.model";
-import { SubCategory } from "../../models/subCategory.model";
 
 import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component";
 import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
 
 import { ProductService } from "../../services/crudproducts.service";
-import { CategoryService } from "../../services/category.service";
-import { SubCategoryService } from "../../services/subCategory.service";
 import { SpinnerService } from "../../services/spinner.service";
 import { CacheManagerService } from "../../services/cache-manager.service";
 
@@ -38,14 +34,15 @@ export class HomeComponent implements OnInit {
   ]
 
   private productsService = inject(ProductService)
-  private categoryService = inject(CategoryService)
-  private subCategoryService = inject(SubCategoryService)
   private spinnerService = inject(SpinnerService)
   private cacheManager = inject(CacheManagerService)
 
   ngOnInit(): void {
     this.spinnerService.showSpinner()
-    
+    this.isCachedDataUsed()
+  }
+
+  isCachedDataUsed() {
     this.cacheManager.refreshAllData().subscribe({
       next: (wasRefreshed) => {
         console.log(wasRefreshed ? "Data was refreshed from API" : "Using cached data")
@@ -53,35 +50,14 @@ export class HomeComponent implements OnInit {
       },
       error: (err) => {
         console.error("Error refreshing cache:", err)
-        this.loadFeaturedProducstShowcase() 
+        this.loadFeaturedProducstShowcase()
       },
     })
   }
 
   loadFeaturedProducstShowcase() {
     this.productsService.getTwoRandomProducts().pipe(finalize(() => this.spinnerService.hideSpinner())).subscribe((randomProds) => {
-
-      const imageUrlOperations = randomProds.map((product) => {
-        return forkJoin({
-          categoryName: this.categoryService.getCategoryNameByCategoryId(product.categoryId),
-          subCategoryName: this.subCategoryService.getSubCategoryNameByCategoryId(product.subCategoryId),
-          product: Promise.resolve(product),
-        })
-      })
-
-
-      forkJoin(imageUrlOperations).subscribe((results) => {
-        this.featuredProducts = results.map((result) => {
-          const catName = result.categoryName.toLowerCase().replace(/\s+/g, "_")
-          const subCatName = result.subCategoryName.toLowerCase().replace(/\s+/g, "_")
-          const imagePath = `assets/${catName}/${subCatName}/${result.product.imageUrl}`
-
-          return {
-            ...result.product,
-            imageUrl: imagePath,
-          }
-        })
-      })
+      this.featuredProducts = randomProds
     })
   }
 

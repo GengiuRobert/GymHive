@@ -19,14 +19,10 @@ export class SubCategoryService {
         const cachedSubCategories = this.cacheService.getDataFromCache<SubCategory[]>(this.ALL_SUBCATEGORIES_KEY)
 
         if (cachedSubCategories != null) {
-            console.log("SUB_CATEGORIES from CACHE")
             return of(cachedSubCategories);
         }
 
         const my_url = this.baseUrl + '/get-all-subcategories'
-
-        //console.log("SUB_CATEGORIES from FETCH FIREBASE")
-
 
         return this.http.get<SubCategory[]>(my_url)
     }

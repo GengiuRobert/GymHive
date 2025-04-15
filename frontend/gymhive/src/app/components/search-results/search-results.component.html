@@ -1,0 +1,30 @@
+<div class="search-results-container" *ngIf="results.length > 0 || isSearching">
+    <div class="search-results-header">
+        <h3>Search Results</h3>
+        <button class="close-button" (click)="closeResults.emit()">&times;</button>
+    </div>
+
+    <div class="search-results-content">
+        <div *ngIf="isSearching" class="searching-indicator">
+            <div class="spinner"></div>
+            <span>Searching...</span>
+        </div>
+
+        <div *ngIf="!isSearching && results.length === 0" class="no-results">
+            <p>No products found. Try a different search term.</p>
+        </div>
+
+        <ul *ngIf="!isSearching && results.length > 0" class="results-list">
+            <li *ngFor="let result of results" class="result-item" (click)="onSelectProduct(result.product)">
+                <div class="result-image">
+                    <img [src]="result.product.imageUrl || 'assets/placeholder-product.jpg'"
+                        [alt]="result.product.name">
+                </div>
+                <div class="result-details">
+                    <h4>{{ result.product.name }}</h4>
+                    <p class="result-price">${{ result.product.price.toFixed(2) }}</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>

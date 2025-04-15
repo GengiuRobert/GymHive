@@ -24,11 +24,8 @@ export class CategoryService {
         const cachedCategories = this.cacheService.getDataFromCache<Category[]>(this.ALL_CATEGORIES_KEY)
 
         if (cachedCategories != null) {
-            console.log("CATEGORIES from CACHE")
             return of(cachedCategories);
         }
-
-        console.log("CATEGORIES from FETCH FIREBASE")
 
         const my_url = this.baseUrl + '/get-all-categories'
 
