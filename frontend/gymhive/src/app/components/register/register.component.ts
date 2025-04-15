@@ -48,11 +48,10 @@ export class RegisterComponent {
       this.isSubmitting = false
       return
     }
-
     this.userService.signUpUser(this.userData).subscribe(
-      (response: AuthResponseData) => {
 
-        this.profileService.createUserProfile(response.localId, this.userData.firstName, this.userData.lastName).subscribe(
+      (response: AuthResponseData) => {
+        this.profileService.createUserProfile(response.localId, this.userData.firstName, this.userData.lastName, this.userData.email).subscribe(
           (profileResponse) => {
             console.log("Profile created successfully:", profileResponse);
           },
@@ -61,7 +60,7 @@ export class RegisterComponent {
             this.isSubmitting = false;
           }
         )
-        
+
         form.reset();
       },
       (error) => {

@@ -12,16 +12,15 @@ export class UserProfileService {
 
     constructor(private http: HttpClient) { }
 
-    createUserProfile(userId: string, firstName: string, lastName: string): Observable<any> {
+    createUserProfile(userId: string, firstName: string, lastName: string, email: string): Observable<any> {
         let my_url = this.baseUrl + "/add-profile";
 
         let createProfileData = {
             userId: userId,
             firstName: firstName,
-            lastName: lastName
+            lastName: lastName,
+            userEmail: email
         }
-
-        console.log("profile Service" + JSON.stringify(createProfileData));
 
         return this.http.post(my_url, createProfileData, { responseType: 'text' });
     }

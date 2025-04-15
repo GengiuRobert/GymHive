@@ -1,91 +1,155 @@
 import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { ActivatedRoute, RouterModule } from "@angular/router"
-import { CategorySidebarComponent } from "../category-sidebar/category-sidebar.component"
+import { catchError, finalize, forkJoin, of, switchMap } from "rxjs"
 
-export interface CategoryItem {
-  name: string
-  link: string
-  subcategories: string[]
-  featured?: {
-    title: string
-    image: string
-    link: string
-  }[]
-  popularProducts?: {
-    name: string
-    image: string
-    price: number
-    link: string
-  }[]
-}
+import { CategorySidebarComponent } from "../category-sidebar/category-sidebar.component"
+import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component"
+import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component"
+
+import { Product } from "../../models/product.model"
+import { Category } from "../../models/category.model"
+import { SubCategory } from "../../models/subCategory.model"
+
+import { ProductService } from "../../services/crudproducts.service"
+import { CategoryService } from "../../services/category.service"
+import { SubCategoryService } from "../../services/subCategory.service"
+import { SpinnerService } from "../../services/spinner.service"
+
 
 @Component({
   selector: "app-category-display",
   standalone: true,
-  imports: [CommonModule, RouterModule, CategorySidebarComponent],
+  imports: [CommonModule, RouterModule, CategorySidebarComponent, ProductDetailsModalComponent, LoadingSpinnerComponent],
   templateUrl: "./category-display.component.html",
   styleUrls: ["./category-display.component.css"],
 })
 export class CategoryDisplayComponent {
   categoryType = ""
   subcategory: string | null = null
-  featured: string | null = null
   categoryTitle = ""
-  featuredTitle = ""
+  currentCategory: Category | undefined
+  currentSubCategory: SubCategory | undefined
+  currentSubCategories: SubCategory[] = []
+  products: Product[] = []
+  productsCopy: Product[] = []
+  selectedProduct: Product | null = null
+  isModalOpen = false
+  selectedPriceFilters: string[] = [];
 
-  dummyProducts = [
-    {
-      id: 1,
-      name: "Premium Dumbbell Set",
-      price: 129.99,
-      image: "assets/image_1.png",
-    },
-    {
-      id: 2,
-      name: "Protein Powder",
-      price: 49.99,
-      image: "assets/image_12.png",
-    },
-    {
-      id: 3,
-      name: "Adjustable Bench",
-      price: 179.99,
-      image: "assets/image_1.png",
-    },
-    {
-      id: 4,
-      name: "Resistance Bands",
-      price: 29.99,
-      image: "assets/image_12.png",
-    },
-    {
-      id: 5,
-      name: "Kettlebell Set",
-      price: 89.99,
-      image: "assets/image_1.png",
-    },
-    {
-      id: 6,
-      name: "Yoga Mat",
-      price: 24.99,
-      image: "assets/image_12.png",
-    },
-  ]
-
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute,
+    private productService: ProductService,
+    private categoryService: CategoryService,
+    private subCategoryService: SubCategoryService,
+    private spinnerService: SpinnerService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
       this.subcategory = params.get("subcategory")
+      this.loadData()
     })
 
     this.route.data.subscribe((data) => {
       this.categoryType = data["categoryType"] || ""
-      this.featured = data["featured"] || null
-
       this.setCategoryTitle()
+      this.loadData()
     })
+  }
+
+  private loadData(): void {
+
+    if (!this.categoryType) return
+
+    this.spinnerService.showSpinner()
+
+    forkJoin({
+      categories: this.categoryService.getAllCategories(),
+      subcategories: this.subCategoryService.getAllSubCategories(),
+    })
+      .pipe(
+        catchError((err) => {
+          console.error("Error loading categories:", err)
+          return of({ categories: [], subcategories: [] })
+        }),
+        switchMap(({ categories, subcategories }) => {
+
+          this.currentCategory = categories.find(
+            (c) => c.categoryName.toLowerCase() === this.categoryType.toLowerCase(),
+          )
+
+          if (this.currentCategory) {
+            this.currentSubCategories = subcategories.filter(
+              (sc) => sc.parentCategoryId === this.currentCategory?.categoryId,
+            )
+          }
+
+          return this.productService.getAllProducts().pipe(
+            catchError((err) => {
+              console.error("Error loading products:", err)
+              return of([])
+            }),
+          )
+        }),
+        finalize(() => this.spinnerService.hideSpinner())
+      )
+      .subscribe((products) => {
+        this.filterAndDisplayProducts(products)
+      })
+
+  }
+
+  private filterAndDisplayProducts(allProducts: Product[]): void {
+
+    let filteredProducts = allProducts
+
+    if (this.currentCategory) {
+      filteredProducts = filteredProducts.filter((p) => p.categoryId === this.currentCategory?.categoryId)
+
+      if (this.subcategory && this.currentSubCategories.length > 0) {
+        const subCategory = this.currentSubCategories.find(
+          (sc) => sc.subCategoryName.toLowerCase() === this.subcategory?.toLowerCase(),
+        )
+
+        if (subCategory) {
+          filteredProducts = filteredProducts.filter((p) => p.subCategoryId === subCategory.subCategoryId)
+        }
+      }
+    }
+
+    this.products = filteredProducts
+    this.productsCopy = this.products
+  }
+
+  onPriceFiltersChanged(filters: string[]): void {
+    this.selectedPriceFilters = filters;
+    this.applyFilters();
+  }
+
+  private applyFilters(): void {
+    if (!this.selectedPriceFilters || this.selectedPriceFilters.length === 0) {
+      this.products = this.productsCopy
+      return;
+    }
+    else {
+      this.products = this.productsCopy
+        .filter(product => this.selectedPriceFilters
+          .some(filter => this.inPriceRange(product.price, filter)))
+    }
+  }
+
+  inPriceRange(price: number, filter: string): boolean {
+    switch (filter) {
+      case "under25":
+        return price < 25;
+      case "25to50":
+        return price >= 25 && price <= 50;
+      case "50to100":
+        return price > 50 && price <= 100;
+      case "over100":
+        return price > 100;
+      default:
+        return true;
+    }
   }
 
   private setCategoryTitle(): void {
@@ -94,38 +158,19 @@ export class CategoryDisplayComponent {
     if (this.subcategory) {
       const formattedSubcategory = this.subcategory.charAt(0).toUpperCase() + this.subcategory.slice(1)
       this.categoryTitle = `${formattedSubcategory} ${formattedCategoryType}`
-    } else if (this.featured) {
-      switch (this.featured) {
-        case "new":
-          this.featuredTitle = "New Arrivals"
-          this.categoryTitle = `New ${formattedCategoryType}`
-          break
-        case "best-sellers":
-          this.featuredTitle = "Best Sellers"
-          this.categoryTitle = `Best Selling ${formattedCategoryType}`
-          break
-        case "top-rated":
-          this.featuredTitle = "Top Rated Products"
-          this.categoryTitle = `Top Rated ${formattedCategoryType}`
-          break
-        case "essentials":
-          this.featuredTitle = "Workout Essentials"
-          this.categoryTitle = `${formattedCategoryType} Essentials`
-          break
-        case "meal-prep":
-          this.featuredTitle = "Meal Prep Solutions"
-          this.categoryTitle = `Meal Prep ${formattedCategoryType}`
-          break
-        case "snacks":
-          this.featuredTitle = "Healthy Snacks"
-          this.categoryTitle = `Healthy ${formattedCategoryType} Snacks`
-          break
-        default:
-          this.categoryTitle = formattedCategoryType
-      }
     } else {
       this.categoryTitle = formattedCategoryType
     }
   }
+
+  openProductDetails(product: Product): void {
+    this.selectedProduct = product
+    this.isModalOpen = true
+  }
+
+  closeModal(): void {
+    this.isModalOpen = false
+  }
+
 }
 

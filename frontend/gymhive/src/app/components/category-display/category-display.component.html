@@ -1,32 +1,43 @@
 <div class="category-page">
+
+    <app-loading-spinner />
+
     <div class="category-header">
         <h1>{{ categoryTitle }}</h1>
         <p *ngIf="subcategory" style="color:rgb(255, 255, 255);">Browse our selection of {{ subcategory }} {{
             categoryType }} </p>
-        <p *ngIf="featured" style="color:rgb(255, 255, 255);">Explore our {{ featuredTitle }}</p>
-        <p *ngIf="!subcategory && !featured" style="color:rgb(255, 255, 255);">Browse our complete selection of {{
+        <p *ngIf="!subcategory" style="color:rgb(255, 255, 255);">Browse our complete selection of {{
             categoryType }}</p>
     </div>
 
     <div class="category-layout">
         <div class="sidebar">
-            <app-category-sidebar [categoryType]="categoryType"
-                [activeSubcategory]="subcategory || featured"></app-category-sidebar>
+            <app-category-sidebar 
+            [categoryType]="categoryType"
+            [activeSubcategory]="subcategory"
+            (priceFiltersChanged)="onPriceFiltersChanged($event)">
+            </app-category-sidebar>
         </div>
 
         <div class="main-content">
             <div class="products-grid">
-                <div class="product-card" *ngFor="let product of dummyProducts">
+                <div class="product-card" *ngFor="let product of products">
                     <div class="product-image">
-                        <img [src]="product.image" [alt]="product.name">
+                        <img [src]="product.imageUrl" [alt]="product.name">
                     </div>
                     <div class="product-info">
                         <h3>{{ product.name }}</h3>
                         <p class="product-price">${{ product.price.toFixed(2) }}</p>
-                        <button class="btn-add-to-cart">Add to Cart</button>
+                        <div class="product-actions">
+                            <button class="btn-see-more" (click)="openProductDetails(product)">See More</button>
+                            <button class="btn-add-to-cart">Add to Cart</button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <app-product-details-modal [product]="selectedProduct" [isOpen]="isModalOpen" (closeModal)="closeModal()">
+    </app-product-details-modal>
 </div>

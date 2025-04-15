@@ -80,6 +80,40 @@ public class UserRepository {
         }
     }
 
+    public String sendEmailVerification(String idToken) throws Exception {
+        String verificationURL = "https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=" + API_KEY;
+        URL url = new URL(verificationURL);
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setRequestProperty("Content-Type", "application/json");
+        conn.setDoOutput(true);
+
+        String requestPayload = String.format("{\"requestType\":\"VERIFY_EMAIL\",\"idToken\":\"%s\"}", idToken);
+
+        try (OutputStream os = conn.getOutputStream()) {
+            byte[] input = requestPayload.getBytes(StandardCharsets.UTF_8);
+            os.write(input, 0, input.length);
+        }
+
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(conn.getInputStream(), StandardCharsets.UTF_8))) {
+            StringBuilder response = new StringBuilder();
+            String responseLine;
+            while ((responseLine = br.readLine()) != null) {
+                response.append(responseLine.trim());
+            }
+            String responseBody = response.toString();
+            JSONObject jsonResponse = new JSONObject(responseBody);
+
+            if (jsonResponse.has("email")) {
+                return "Verification email sent to: " + jsonResponse.getString("email");
+            } else {
+                throw new Exception("Email verification failed: " + responseBody);
+            }
+        } catch (Exception e) {
+            throw new Exception("[REPOSITORY] An error occurred during email verification: " + e.getMessage());
+        }
+    }
+
     public String deleteAccount(String userId) throws Exception {
         String deleteAccountURL = "https://identitytoolkit.googleapis.com/v1/accounts:delete?key=" + API_KEY;
         URL url = new URL(deleteAccountURL);

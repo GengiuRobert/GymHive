@@ -18,16 +18,19 @@ export class AdminDashboardComponent implements OnInit {
     name: '',
     description: '',
     price: 0,
-    category: ''
+    categoryId: '',
+    subCategoryId: '',
+    imageUrl: ''
   };
 
   updateProductId: string = '';
   updatedProduct: Product = {
-    productId: '',
     name: '',
     description: '',
     price: 0,
-    category: ''
+    categoryId: '',
+    subCategoryId: '',
+    imageUrl: ''
   };
 
   deleteProductId: string = '';
@@ -54,7 +57,7 @@ export class AdminDashboardComponent implements OnInit {
       res => {
         console.log(res);
         this.getAllProducts();
-        this.newProduct = { name: '', description: '', price: 0, category: '' };
+        this.newProduct = { name: '', description: '', price: 0, categoryId: '',subCategoryId:'',imageUrl:'' };
       },
       error => console.error('Error adding product:', error)
     );
@@ -66,7 +69,7 @@ export class AdminDashboardComponent implements OnInit {
         console.log(res);
         this.getAllProducts();
         this.updateProductId = '';
-        this.updatedProduct = { productId: '', name: '', description: '', price: 0, category: '' };
+        this.updatedProduct = { productId: '', name: '', description: '', price: 0, categoryId: '',subCategoryId:'',imageUrl:'' };
       },
       error => console.error('Error updating product:', error)
     );

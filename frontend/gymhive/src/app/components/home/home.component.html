@@ -1,4 +1,7 @@
 <div class="home-container">
+
+    <app-loading-spinner/>
+
     <section class="hero-section">
         <div class="hero-content">
             <h1>Welcome to GymHive</h1>
@@ -29,52 +32,24 @@
 
         <div class="products-grid">
             <div *ngFor="let product of featuredProducts" class="product-card">
-                <a [routerLink]="['/product', product.id]" class="product-image">
-                    <img [src]="product.image" [alt]="product.name">
-                </a>
                 <div class="product-info">
-                    <span class="product-category">{{ product.category }}</span>
+                    <span class="product-image">
+                        <img [src]="product.imageUrl" [alt]="product.name">
+                    </span>
                     <h3 class="product-name">
-                        <a [routerLink]="['/product', product.id]">{{ product.name }}</a>
+                        {{ product.name }}
                     </h3>
                     <div class="product-price">
                         <span class="current-price">${{ product.price.toFixed(2) }}</span>
                     </div>
+                    <button class="btn btn-add-to-cart" (click)="openProductDetails(product)">See More</button>
                     <button class="btn btn-add-to-cart">Add to Cart</button>
+
+
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- <section class="offer-banner">
-        <div class="offer-content">
-            <div class="offer-text">
-                <h2>Summer Sale</h2>
-                <h3>Up to 40% Off Selected Items</h3>
-                <p>Limited time offer on premium fitness equipment and supplements</p>
-                <div class="countdown">
-                    <div class="countdown-item">
-                        <span class="countdown-value">{{ timeRemaining.days }}</span>
-                        <span class="countdown-label">Days</span>
-                    </div>
-                    <div class="countdown-item">
-                        <span class="countdown-value">{{ timeRemaining.hours }}</span>
-                        <span class="countdown-label">Hours</span>
-                    </div>
-                    <div class="countdown-item">
-                        <span class="countdown-value">{{ timeRemaining.minutes }}</span>
-                        <span class="countdown-label">Mins</span>
-                    </div>
-                    <div class="countdown-item">
-                        <span class="countdown-value">{{ timeRemaining.seconds }}</span>
-                        <span class="countdown-label">Secs</span>
-                    </div>
-                </div>
-                <a routerLink="/deals" class="btn btn-primary">Shop Now</a>
-            </div>
-            <div class="offer-image" style="background-color: #444;"></div>
-        </div>
-    </section> -->
 
     <section class="benefits-section">
         <div class="benefits-grid">
@@ -108,4 +83,7 @@
             </div>
         </div>
     </section>
+
+    <app-product-details-modal [product]="selectedProduct" [isOpen]="isModalOpen" (closeModal)="closeModal()">
+    </app-product-details-modal>
 </div>

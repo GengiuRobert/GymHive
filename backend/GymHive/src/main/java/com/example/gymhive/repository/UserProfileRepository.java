@@ -1,6 +1,5 @@
 package com.example.gymhive.repository;
 
-import com.example.gymhive.entity.Product;
 import com.example.gymhive.entity.UserProfile;
 import com.example.gymhive.service.FirestoreService;
 import com.google.api.core.ApiFuture;
@@ -116,7 +115,6 @@ public class UserProfileRepository {
 
             if (!querySnapshot.isEmpty()) {
                 DocumentSnapshot document = querySnapshot.getDocuments().getFirst();
-                System.out.println((document.toObject(UserProfile.class)).toString());
                 return document.toObject(UserProfile.class);
             }
 

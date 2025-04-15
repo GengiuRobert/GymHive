@@ -1,6 +1,7 @@
 package com.example.gymhive.repository;
 
 import com.example.gymhive.entity.ShoppingCart;
+import com.example.gymhive.entity.UserProfile;
 import com.example.gymhive.service.FirestoreService;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;
@@ -22,8 +23,8 @@ public class ShoppingCartRepository {
     }
 
     public String save(ShoppingCart shoppingCart) {
-        CollectionReference collecton = firestoreService.getCollection("shoppingCarts");
-        DocumentReference docRef = collecton.document();
+        CollectionReference collection = firestoreService.getCollection("shoppingCarts");
+        DocumentReference docRef = collection.document();
         shoppingCart.setShoppingCartId(docRef.getId());
         docRef.set(shoppingCart);
         return "shoppingCart saved";
@@ -48,7 +49,9 @@ public class ShoppingCartRepository {
         Map<String,Object> updates = new HashMap<>();
 
         if(updatedShoppingCart.getProducts() != null && !updatedShoppingCart.getProducts().isEmpty()) {
-            updates.put("products",updatedShoppingCart.getProducts());
+            updates.put("products", updatedShoppingCart.getProducts());
+            updates.put("totalItems", updatedShoppingCart.getProducts().size());
+            updates.put("totalPrice", updatedShoppingCart.calculateTotalPrice(updatedShoppingCart.getProducts()));
         }
 
         if(updatedShoppingCart.getUserEmail() != null && !updatedShoppingCart.getUserEmail().trim().isEmpty()) {
@@ -66,6 +69,40 @@ public class ShoppingCartRepository {
         docRef.update(updates);
 
         return "shoppingCart updated";
+    }
+
+    public ShoppingCart getShoppingCartById(String shoppingCartId) {
+        CollectionReference collection = firestoreService.getCollection("shoppingCarts");
+        DocumentReference docRef = collection.document(shoppingCartId);
+        ApiFuture<DocumentSnapshot> future = docRef.get();
+        try {
+            DocumentSnapshot documentSnapshot = future.get();
+            if (documentSnapshot.exists()) {
+                return documentSnapshot.toObject(ShoppingCart.class);
+            }
+            return null;
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public ShoppingCart getShoppingCartByUserId(String userId) {
+        try {
+            CollectionReference shoppingCarts = firestoreService.getCollection("shoppingCarts");
+            Query query = shoppingCarts.whereEqualTo("userId", userId);
+
+            ApiFuture<QuerySnapshot> future = query.get();
+            QuerySnapshot querySnapshot = future.get();
+
+            if (!querySnapshot.isEmpty()) {
+                DocumentSnapshot document = querySnapshot.getDocuments().getFirst();
+                return document.toObject(ShoppingCart.class);
+            }
+
+            return null;
+        } catch (InterruptedException | ExecutionException e){
+            throw new RuntimeException(e);
+        }
     }
 
     public List<ShoppingCart> getAll() {

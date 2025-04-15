@@ -191,6 +191,15 @@
         width: auto;
         margin: 0 1rem;
     }
+
+    app-search-results {
+        position: fixed;
+        top: 70px;
+        left: 0;
+        right: 0;
+        width: auto;
+        margin: 0 1rem;
+    }
 }
 
 .search-form input {
@@ -201,6 +210,8 @@
     color: #ffffff;
     border-radius: 4px 0 0 4px;
     margin: 0;
+    width: 100%;
+    min-width: 200px;
 }
 
 .search-form input:focus {
@@ -215,6 +226,14 @@
     cursor: pointer;
     border-radius: 0 4px 4px 0;
     margin: 0;
+}
+
+app-search-results {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 1002;
+    width: 100%;
 }
 
 .mobile-nav {

@@ -23,11 +23,17 @@
                 </button>
                 <form *ngIf="isSearchOpen" class="search-form" (submit)="submitSearch()">
                     <input type="text" [(ngModel)]="searchQuery" name="search" placeholder="Search products..."
-                        autocomplete="off" />
+                        autocomplete="off" (input)="onSearchInput()" />
                     <button type="submit" aria-label="Submit search">
                         <i class="icon-search"></i>
                     </button>
                 </form>
+
+                <!-- Search Results Component -->
+                <app-search-results *ngIf="isSearchOpen && showSearchResults" [results]="searchResults"
+                    [isSearching]="isSearching" (selectProduct)="selectProduct($event)"
+                    (closeResults)="closeSearchResults()">
+                </app-search-results>
             </div>
 
             @if(isAuthenticated){
@@ -63,4 +69,8 @@
             <li><a routerLink="/account" (click)="toggleMenu()">My Account</a></li>
         </ul>
     </nav>
+
+    <!-- Product Details Modal -->
+    <app-product-details-modal [product]="selectedProduct" [isOpen]="isModalOpen" (closeModal)="closeModal()">
+    </app-product-details-modal>
 </header>
