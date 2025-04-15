@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -23,9 +24,9 @@ public class ShoppingCart {
         this.shoppingCartId = shoppingCartId;
         this.userId = userId;
         this.userEmail = userEmail;
-        this.products = products;
-        this.totalItems = products.size();
-        this.totalPrice = calculateTotalPrice(products);
+        this.products = (products != null) ? products : new ArrayList<Product>();
+        this.totalItems = this.products.size();
+        this.totalPrice = calculateTotalPrice(this.products);
     }
 
     public Double calculateTotalPrice(List<Product> shoppingCartProducts) {
@@ -34,5 +35,14 @@ public class ShoppingCart {
             totalPrice += product.getPrice();
         }
         return totalPrice;
+    }
+
+    public void addProduct(Product product) {
+        if(this.products == null) {
+            this.products = new ArrayList<>();
+        }
+        this.products.add(product);
+        this.totalItems = this.products.size();
+        this.totalPrice = calculateTotalPrice(this.products);
     }
 }
