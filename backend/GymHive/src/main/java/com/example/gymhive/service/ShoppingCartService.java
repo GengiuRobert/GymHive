@@ -49,6 +49,19 @@ public class ShoppingCartService {
         return shoppingCart;
     }
 
+    public ShoppingCart removeProductFromShoppingCart(String shoppingCartId, String productId) {
+        ShoppingCart shoppingCart = shoppingCartRepository.getShoppingCartById(shoppingCartId);
+        if (shoppingCart == null) {
+            throw new IllegalArgumentException("Shopping Cart not found with ID: " + shoppingCartId);
+        }
+        boolean removed = shoppingCart.removeProduct(productId);
+        if (!removed) {
+            throw new IllegalArgumentException("Product with ID " + productId + " not found in the shopping cart");
+        }
+        shoppingCartRepository.update(shoppingCartId, shoppingCart);
+        return shoppingCart;
+    }
+
     public ShoppingCart getShoppingCartByUserId(String userId) {
         if(userId == null || userId.trim().isEmpty()){
             throw new IllegalArgumentException("User id cannot be null or empty");

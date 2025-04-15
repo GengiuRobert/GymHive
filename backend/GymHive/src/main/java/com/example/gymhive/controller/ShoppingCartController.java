@@ -51,6 +51,12 @@ public class ShoppingCartController {
         return shoppingCartService.addProductToShoppingCart(shoppingCartId, product);
     }
 
+    @DeleteMapping("/remove-product/{shoppingCartId}/{productId}")
+    @ResponseBody
+    public ShoppingCart removeProductFromCart(@PathVariable String shoppingCartId, @PathVariable String productId) {
+        return shoppingCartService.removeProductFromShoppingCart(shoppingCartId, productId);
+    }
+
     @GetMapping("/get-all-shopping-carts")
     @ResponseBody
     public List<ShoppingCart> getAllShoppingCarts() {

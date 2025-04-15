@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @Getter
@@ -44,5 +45,21 @@ public class ShoppingCart {
         this.products.add(product);
         this.totalItems = this.products.size();
         this.totalPrice = calculateTotalPrice(this.products);
+    }
+
+    public boolean removeProduct(String productId) {
+        if (this.products != null) {
+            Iterator<Product> iterator = this.products.iterator();
+            while (iterator.hasNext()) {
+                Product product = iterator.next();
+                if (product.getProductId() != null && product.getProductId().equals(productId)) {
+                    iterator.remove();
+                    this.totalItems = this.products.size();
+                    this.totalPrice = calculateTotalPrice(this.products);
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
