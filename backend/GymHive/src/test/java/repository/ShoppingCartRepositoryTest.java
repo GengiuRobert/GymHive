@@ -14,7 +14,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -53,7 +52,7 @@ public class ShoppingCartRepositoryTest {
         product.setDescription("Mock Desc");
         product.setPrice(50.0);
 
-        shoppingCart = new ShoppingCart("1", "user1", "user1@example.com", Map.of(product,1));
+        shoppingCart = new ShoppingCart("1", "user1", "user1@example.com", List.of(product));
         lenient().when(firestoreService.getCollection("shoppingCarts")).thenReturn(collectionReference);
     }
 

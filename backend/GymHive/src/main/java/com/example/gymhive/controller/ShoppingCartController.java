@@ -51,15 +51,6 @@ public class ShoppingCartController {
         return shoppingCartService.addProductToShoppingCart(shoppingCartId, product);
     }
 
-    @PutMapping("/modify-quantity/{shoppingCartId}/{productId}/{quantityChange}")
-    @ResponseBody
-    public ShoppingCart modifyProductQuantity(
-            @PathVariable String shoppingCartId,
-            @PathVariable String productId,
-            @PathVariable int quantityChange) {
-        return shoppingCartService.modifyProductQuantity(shoppingCartId, productId, quantityChange);
-    }
-
     @DeleteMapping("/remove-product/{shoppingCartId}/{productId}")
     @ResponseBody
     public ShoppingCart removeProductFromCart(@PathVariable String shoppingCartId, @PathVariable String productId) {
