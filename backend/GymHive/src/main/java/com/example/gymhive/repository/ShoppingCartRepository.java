@@ -50,8 +50,8 @@ public class ShoppingCartRepository {
 
         if(updatedShoppingCart.getProducts() != null && !updatedShoppingCart.getProducts().isEmpty()) {
             updates.put("products", updatedShoppingCart.getProducts());
-            updates.put("totalItems", updatedShoppingCart.getProducts().size());
-            updates.put("totalPrice", updatedShoppingCart.calculateTotalPrice(updatedShoppingCart.getProducts()));
+            updates.put("totalItems", updatedShoppingCart.calculateTotalItems());
+            updates.put("totalPrice", updatedShoppingCart.calculateTotalPrice());
         }
 
         if(updatedShoppingCart.getUserEmail() != null && !updatedShoppingCart.getUserEmail().trim().isEmpty()) {

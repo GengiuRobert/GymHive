@@ -41,7 +41,7 @@ public class ShoppingCartService {
 
     public ShoppingCart addProductToShoppingCart(String shoppingCartId, Product product) {
         ShoppingCart shoppingCart = shoppingCartRepository.getShoppingCartById(shoppingCartId);
-        if(shoppingCart == null) {
+        if (shoppingCart == null) {
             throw new IllegalArgumentException("Shopping Cart not found with ID: " + shoppingCartId);
         }
         shoppingCart.addProduct(product);
@@ -54,10 +54,21 @@ public class ShoppingCartService {
         if (shoppingCart == null) {
             throw new IllegalArgumentException("Shopping Cart not found with ID: " + shoppingCartId);
         }
-        boolean removed = shoppingCart.removeProduct(productId);
-        if (!removed) {
+
+        Product productToRemove = null;
+        for (Product product : shoppingCart.getProducts().keySet()) {
+            if (product.getProductId().equals(productId)) {
+                productToRemove = product;
+                break;
+            }
+        }
+
+        if (productToRemove != null) {
+            shoppingCart.removeProduct(productToRemove);
+        } else {
             throw new IllegalArgumentException("Product with ID " + productId + " not found in the shopping cart");
         }
+
         shoppingCartRepository.update(shoppingCartId, shoppingCart);
         return shoppingCart;
     }
