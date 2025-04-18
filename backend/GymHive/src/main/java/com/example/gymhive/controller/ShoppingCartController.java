@@ -44,11 +44,11 @@ public class ShoppingCartController {
         return this.shoppingCartService.updateShoppingCart(shoppingCartId,updatedShoppingCart);
     }
 
-    @PutMapping("/add-product/{shoppingCartId}")
+    @PutMapping("/add-product/{shoppingCartId}/{quantity}")
     @ResponseBody
-    public ShoppingCart addProductToCart(@PathVariable String shoppingCartId,
+    public ShoppingCart addProductToCart(@PathVariable String shoppingCartId, @PathVariable int quantity,
                                          @RequestBody Product product) {
-        return shoppingCartService.addProductToShoppingCart(shoppingCartId, product);
+        return shoppingCartService.addProductToShoppingCart(shoppingCartId, product, quantity);
     }
 
     @DeleteMapping("/remove-product/{shoppingCartId}/{productId}")
