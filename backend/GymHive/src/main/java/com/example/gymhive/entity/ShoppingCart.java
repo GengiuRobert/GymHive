@@ -62,4 +62,12 @@ public class ShoppingCart {
         }
         return false;
     }
+
+    public void removeAllProducts(String productId) {
+        if (this.products != null) {
+            this.products.removeIf(p -> p.getProductId() != null && p.getProductId().equals(productId));
+            this.totalItems = this.products.size();
+            this.totalPrice = calculateTotalPrice(this.products);
+        }
+    }
 }

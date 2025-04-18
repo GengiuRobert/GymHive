@@ -39,12 +39,14 @@ public class ShoppingCartService {
         return shoppingCartRepository.update(shoppingCartId, updatedShoppingCart);
     }
 
-    public ShoppingCart addProductToShoppingCart(String shoppingCartId, Product product) {
+    public ShoppingCart addProductToShoppingCart(String shoppingCartId, Product product, int quantity) {
         ShoppingCart shoppingCart = shoppingCartRepository.getShoppingCartById(shoppingCartId);
         if(shoppingCart == null) {
             throw new IllegalArgumentException("Shopping Cart not found with ID: " + shoppingCartId);
         }
-        shoppingCart.addProduct(product);
+        for(int i=0;i<quantity;i++) {
+            shoppingCart.addProduct(product);
+        }
         shoppingCartRepository.update(shoppingCartId, shoppingCart);
         return shoppingCart;
     }
@@ -60,6 +62,18 @@ public class ShoppingCartService {
         }
         shoppingCartRepository.update(shoppingCartId, shoppingCart);
         return shoppingCart;
+    }
+
+    public ShoppingCart removeAllOfProduct(String shoppingCartId, String productId) {
+        ShoppingCart cart = shoppingCartRepository.getShoppingCartById(shoppingCartId);
+        if (cart == null) {
+            throw new IllegalArgumentException("Shopping Cart not found with ID: " + shoppingCartId);
+        }
+
+        cart.removeAllProducts(productId);
+        shoppingCartRepository.update(shoppingCartId, cart);
+
+        return cart;
     }
 
     public ShoppingCart getShoppingCartByUserId(String userId) {

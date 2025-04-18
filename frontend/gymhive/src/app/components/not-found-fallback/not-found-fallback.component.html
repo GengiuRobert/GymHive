@@ -1,0 +1,31 @@
+<div class="not-found-container">
+    <div class="not-found-content">
+        <div class="not-found-icon">404</div>
+
+        <h1>Oops! Page Not Found</h1>
+
+        <p class="not-found-message">
+            We can't seem to find the page you're looking for.
+            It might have been moved, deleted, or never existed.
+        </p>
+
+        <div class="suggestions">
+            <p>You might want to:</p>
+            <ul>
+                <li>Check the URL for typos</li>
+                <li>Go back to the previous page</li>
+                <li>Start fresh from our homepage</li>
+            </ul>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-back" (click)="goBack()">
+                <i class="icon-arrow-left"></i> Go Back
+            </button>
+
+            <a routerLink="/" class="btn btn-primary">
+                <i class="icon-home"></i> Back to Homepage
+            </a>
+        </div>
+    </div>
+</div>

@@ -48,7 +48,7 @@ public class ShoppingCartRepository {
 
         Map<String,Object> updates = new HashMap<>();
 
-        if(updatedShoppingCart.getProducts() != null && !updatedShoppingCart.getProducts().isEmpty()) {
+        if(updatedShoppingCart.getProducts() != null) {
             updates.put("products", updatedShoppingCart.getProducts());
             updates.put("totalItems", updatedShoppingCart.getProducts().size());
             updates.put("totalPrice", updatedShoppingCart.calculateTotalPrice(updatedShoppingCart.getProducts()));

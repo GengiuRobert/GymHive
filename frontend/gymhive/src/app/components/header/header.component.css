@@ -236,6 +236,44 @@ app-search-results {
     width: 100%;
 }
 
+.icon-button.cart.active {
+    background-color: rgba(255, 107, 0, 0.2);
+    color: #ff6b00;
+}
+
+.icon-button.cart {
+    position: relative;
+    overflow: visible;
+}
+
+.icon-button.cart:hover {
+    background-color: rgba(255, 107, 0, 0.1);
+}
+
+.icon-button.cart:active {
+    background-color: rgba(255, 107, 0, 0.2);
+}
+
+.cart-count {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: #ff6b00;
+    color: #ffffff;
+    font-size: 0.75rem;
+    min-width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    padding: 0 4px;
+    transition: transform 0.2s, background-color 0.2s;
+    animation: cartBadgePulse 0.3s ease-out;
+}
+
 .mobile-nav {
     display: none;
     background-color: #2a2a2a;

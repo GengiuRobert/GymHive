@@ -1,7 +1,7 @@
-import { Component, inject, type OnInit } from "@angular/core"
+import { Component, inject, OnDestroy, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { RouterModule } from "@angular/router"
-import { finalize } from "rxjs";
+import { finalize, Subscription } from "rxjs";
 
 import { Product } from "../../models/product.model"
 
@@ -11,6 +11,8 @@ import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.comp
 import { ProductService } from "../../services/crudproducts.service";
 import { SpinnerService } from "../../services/spinner.service";
 import { CacheManagerService } from "../../services/cache-manager.service";
+import { ShoppingCartService } from "../../services/shopping-cart.service";
+import { UserService } from "../../services/user.service";
 
 @Component({
   selector: "app-home",
@@ -19,12 +21,17 @@ import { CacheManagerService } from "../../services/cache-manager.service";
   templateUrl: "./home.component.html",
   styleUrls: ["./home.component.css"],
 })
-export class HomeComponent implements OnInit {
-
-  selectedProduct: Product | null = null
-  isModalOpen = false
+export class HomeComponent implements OnInit,OnDestroy {
 
   featuredProducts: Product[] = []
+  selectedProduct: Product | null = null
+  userId: string | null = null
+  cartId: string | null = null
+
+  isModalOpen = false
+  isAddingToCart = false
+
+  private userSubscription: Subscription | null = null
 
   categories = [
     { name: "Equipment", link: "/category/equipment" },
@@ -36,10 +43,27 @@ export class HomeComponent implements OnInit {
   private productsService = inject(ProductService)
   private spinnerService = inject(SpinnerService)
   private cacheManager = inject(CacheManagerService)
+  private shoppingCartService = inject(ShoppingCartService)
+  private userService = inject(UserService)
 
   ngOnInit(): void {
     this.spinnerService.showSpinner()
     this.isCachedDataUsed()
+    this.userSubscription = this.userService.user.subscribe((user) => {
+      if (user) {
+        this.userId = user.id
+        this.loadUserCart()
+      } else {
+        this.userId = null
+        this.cartId = null
+      }
+    })
+  }
+
+  ngOnDestroy(): void {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe()
+    }
   }
 
   isCachedDataUsed() {
@@ -70,5 +94,40 @@ export class HomeComponent implements OnInit {
     this.isModalOpen = false
   }
 
+  loadUserCart(): void {
+    if (!this.userId) return
+
+    this.shoppingCartService.getShoppingCartByUserId(this.userId).subscribe({
+      next: (cart) => {
+        this.cartId = cart.shoppingCartId || null
+      },
+      error: (err) => {
+        console.error("Error loading cart:", err)
+        this.cartId = null
+      },
+    })
+  }
+
+  addToCart(product: Product): void {
+    if (!this.userId) {
+      console.log("Please log in to add items to your cart.")
+      return
+    }
+
+    this.isAddingToCart = true
+
+    if (this.cartId) {
+      this.shoppingCartService.addProductToCart(this.cartId, product).subscribe({
+        next: () => {
+          this.isAddingToCart = false
+          this.shoppingCartService.notifyCartUpdated()
+        },
+        error: (err) => {
+          console.error("Error adding product to cart:", err)
+          this.isAddingToCart = false
+        },
+      })
+    }
+  }
 
 }

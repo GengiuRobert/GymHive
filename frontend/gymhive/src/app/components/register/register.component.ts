@@ -5,9 +5,11 @@ import { RouterModule } from "@angular/router"
 
 import { UserService } from "../../services/user.service"
 import { UserProfileService } from "../../services/profile.service"
+import { ShoppingCartService } from "../../services/shopping-cart.service"
 
 import { RegisterData } from "../../models/register.model"
 import { AuthResponseData } from "../../models/auth.model"
+import { ShoppingCart } from "../../models/shopping-cart.model"
 
 @Component({
   selector: "app-register",
@@ -18,7 +20,7 @@ import { AuthResponseData } from "../../models/auth.model"
 })
 export class RegisterComponent {
 
-  constructor(private userService: UserService, private profileService: UserProfileService) { }
+  constructor(private userService: UserService, private profileService: UserProfileService, private shoppingCarService: ShoppingCartService) { }
 
   userData: RegisterData = {
     firstName: "",
@@ -51,6 +53,7 @@ export class RegisterComponent {
     this.userService.signUpUser(this.userData).subscribe(
 
       (response: AuthResponseData) => {
+
         this.profileService.createUserProfile(response.localId, this.userData.firstName, this.userData.lastName, this.userData.email).subscribe(
           (profileResponse) => {
             console.log("Profile created successfully:", profileResponse);
@@ -60,6 +63,20 @@ export class RegisterComponent {
             this.isSubmitting = false;
           }
         )
+
+        const newCart: ShoppingCart = {
+          userId: response.localId,
+          userEmail: this.userData.email,
+        };
+
+        this.shoppingCarService.createShoppingCart(newCart).subscribe(
+          (cartResponse) => {
+            console.log("Shopping cart created:", cartResponse);
+          },
+          (cartError) => {
+            console.error("Error creating shopping cart:", cartError);
+          }
+        );
 
         form.reset();
       },
