@@ -43,8 +43,11 @@
                         <span class="current-price">${{ product.price.toFixed(2) }}</span>
                     </div>
                     <button class="btn btn-add-to-cart" (click)="openProductDetails(product)">See More</button>
+                    @if(userId){
                     <button class="btn btn-add-to-cart" (click)="addToCart(product)" [disabled]="isAddingToCart">Add to
                         Cart</button>
+                    }
+
 
 
                 </div>
