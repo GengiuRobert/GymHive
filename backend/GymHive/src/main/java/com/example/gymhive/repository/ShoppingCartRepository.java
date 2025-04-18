@@ -31,8 +31,8 @@ public class ShoppingCartRepository {
     }
 
     public String delete(String shoppingCartId) {
-        CollectionReference collecton = firestoreService.getCollection("shoppingCarts");
-        DocumentReference docRef = collecton.document(shoppingCartId);
+        CollectionReference collection = firestoreService.getCollection("shoppingCarts");
+        DocumentReference docRef = collection.document(shoppingCartId);
         docRef.delete();
         return "shoppingCart deleted";
     }
