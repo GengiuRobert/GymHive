@@ -1,7 +1,7 @@
-import { Component } from "@angular/core"
+import { Component, OnDestroy, OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { ActivatedRoute, RouterModule } from "@angular/router"
-import { catchError, finalize, forkJoin, of, switchMap } from "rxjs"
+import { catchError, finalize, forkJoin, of, Subscription, switchMap } from "rxjs"
 
 import { CategorySidebarComponent } from "../category-sidebar/category-sidebar.component"
 import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component"
@@ -15,7 +15,8 @@ import { ProductService } from "../../services/crudproducts.service"
 import { CategoryService } from "../../services/category.service"
 import { SubCategoryService } from "../../services/subCategory.service"
 import { SpinnerService } from "../../services/spinner.service"
-
+import { UserService } from "../../services/user.service"
+import { ShoppingCartService } from "../../services/shopping-cart.service"
 
 @Component({
   selector: "app-category-display",
@@ -24,24 +25,35 @@ import { SpinnerService } from "../../services/spinner.service"
   templateUrl: "./category-display.component.html",
   styleUrls: ["./category-display.component.css"],
 })
-export class CategoryDisplayComponent {
+
+export class CategoryDisplayComponent implements OnInit, OnDestroy {
+
   categoryType = ""
-  subcategory: string | null = null
   categoryTitle = ""
+
+  subcategory: string | null = null
   currentCategory: Category | undefined
   currentSubCategory: SubCategory | undefined
   currentSubCategories: SubCategory[] = []
   products: Product[] = []
   productsCopy: Product[] = []
   selectedProduct: Product | null = null
-  isModalOpen = false
   selectedPriceFilters: string[] = [];
+  userId: string | null = null
+  cartId: string | null = null
+
+  private userSubscription: Subscription | null = null
+
+  isModalOpen = false
+  isAddingToCart = false
 
   constructor(private route: ActivatedRoute,
     private productService: ProductService,
     private categoryService: CategoryService,
     private subCategoryService: SubCategoryService,
-    private spinnerService: SpinnerService) { }
+    private spinnerService: SpinnerService,
+    private userService: UserService,
+    private shoppingCartService: ShoppingCartService) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((params) => {
@@ -54,6 +66,22 @@ export class CategoryDisplayComponent {
       this.setCategoryTitle()
       this.loadData()
     })
+
+    this.userSubscription = this.userService.user.subscribe((user) => {
+      if (user) {
+        this.userId = user.id
+        this.loadUserCart()
+      } else {
+        this.userId = null
+        this.cartId = null
+      }
+    })
+  }
+
+  ngOnDestroy(): void {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe()
+    }
   }
 
   private loadData(): void {
@@ -170,6 +198,42 @@ export class CategoryDisplayComponent {
 
   closeModal(): void {
     this.isModalOpen = false
+  }
+
+  loadUserCart(): void {
+    if (!this.userId) return
+
+    this.shoppingCartService.getShoppingCartByUserId(this.userId).subscribe({
+      next: (cart) => {
+        this.cartId = cart.shoppingCartId || null
+      },
+      error: (err) => {
+        console.error("Error loading cart:", err)
+        this.cartId = null
+      },
+    })
+  }
+
+  addToCart(product: Product): void {
+    if (!this.userId) {
+      console.log("Please log in to add items to your cart.")
+      return
+    }
+
+    this.isAddingToCart = true
+
+    if (this.cartId) {
+      this.shoppingCartService.addProductToCart(this.cartId, product).subscribe({
+        next: () => {
+          this.isAddingToCart = false
+          this.shoppingCartService.notifyCartUpdated()
+        },
+        error: (err) => {
+          console.error("Error adding product to cart:", err)
+          this.isAddingToCart = false
+        },
+      })
+    }
   }
 
 }

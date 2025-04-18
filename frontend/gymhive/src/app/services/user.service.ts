@@ -1,12 +1,15 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { RegisterData } from "../models/register.model";
-import { BehaviorSubject, Observable, tap } from "rxjs";
+import { BehaviorSubject, Observable, switchMap, tap } from "rxjs";
 import { Router } from "@angular/router";
 
 import { LoginData } from "../models/login.model";
 import { User } from "../models/user.model";
 import { AuthResponseData } from "../models/auth.model";
+import { ShoppingCart } from "../models/shopping-cart.model";
+
+import { ShoppingCartService } from "./shopping-cart.service";
 
 @Injectable({ providedIn: 'root' })
 

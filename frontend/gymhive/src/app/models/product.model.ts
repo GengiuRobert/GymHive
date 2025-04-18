@@ -1,4 +1,5 @@
 export interface Product{
+    quantity?: number
     productId?: string,
     name: string,
     description: string,

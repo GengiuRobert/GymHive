@@ -6,16 +6,18 @@ import { Subscription } from 'rxjs';
 
 import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component";
 import { SearchResultsComponent } from "../search-results/search-results.component";
+import { ShoppingCartModalComponent } from "../shopping-cart-modal/shopping-cart-modal.component";
 
 import { SidebarItem } from '../../models/categorySidebarItem.model';
 import { Product } from '../../models/product.model';
 
 import { UserService } from '../../services/user.service';
 import { SearchService } from '../../services/search.service';
+import { ShoppingCartService } from '../../services/shopping-cart.service';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, RouterModule, FormsModule, ProductDetailsModalComponent, SearchResultsComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ProductDetailsModalComponent, SearchResultsComponent, ShoppingCartModalComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -23,6 +25,21 @@ export class HeaderComponent implements OnInit, OnDestroy {
   isMenuOpen = false
   isSearchOpen = false
   cartItemCount = 0
+  searchQuery = ""
+  isAuthenticated = false;
+  isSearching = false
+  showSearchResults = false
+  isModalOpen = false
+  isCartModalOpen = false
+
+  private userSub!: Subscription;
+  private searchSub!: Subscription
+  private cartUpdateSub!: Subscription
+
+  activeCategory: SidebarItem | null = null
+  searchResults: any[] = []
+  selectedProduct: Product | null = null
+  userId: string | null = null
 
   categories = [
     {
@@ -43,23 +60,19 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   ]
 
-  searchQuery = ""
-  isAuthenticated = false;
-  private userSub!: Subscription;
-  activeCategory: SidebarItem | null = null
-  private searchSub!: Subscription
-  searchResults: any[] = []
-  isSearching = false
-  showSearchResults = false
-  selectedProduct: Product | null = null
-  isModalOpen = false
-
-  constructor(private userService: UserService, private searchService: SearchService) { }
+  constructor(private userService: UserService, private searchService: SearchService, private shoppingCartService: ShoppingCartService,) { }
 
   ngOnInit(): void {
 
     this.userSub = this.userService.user.subscribe(user => {
       this.isAuthenticated = !!user
+      if (user) {
+        this.userId = user.id
+        this.loadCartItemCount()
+      } else {
+        this.userId = null
+        this.cartItemCount = 0
+      }
     })
 
     this.searchSub = this.searchService.searchResults$.subscribe((results) => {
@@ -76,6 +89,12 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.isModalOpen = true
       }
     })
+
+    this.cartUpdateSub = this.shoppingCartService.cartUpdated$.subscribe(() => {
+      if (this.userId) {
+        this.loadCartItemCount()
+      }
+    })
   }
 
   ngOnDestroy(): void {
@@ -85,6 +104,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.searchSub) {
       this.searchSub.unsubscribe()
     }
+    if (this.cartUpdateSub) {
+      this.cartUpdateSub.unsubscribe()
+    }
+  }
+
+  loadCartItemCount(): void {
+    if (!this.userId) return
+
+    this.shoppingCartService.getShoppingCartByUserId(this.userId).subscribe({
+      next: (cart) => {
+        this.cartItemCount = cart.totalItems || 0
+      },
+      error: (err) => {
+        console.error("Error loading cart:", err)
+        this.cartItemCount = 0
+      },
+    })
   }
 
   toggleMenu(): void {
@@ -92,6 +128,23 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (this.isMenuOpen) {
       this.isSearchOpen = false
       this.showSearchResults = false
+    }
+  }
+
+  toggleCartModal(event: Event): void {
+    event.preventDefault()
+    this.isCartModalOpen = !this.isCartModalOpen
+    if (this.isCartModalOpen) {
+      this.isSearchOpen = false
+      this.showSearchResults = false
+      this.isMenuOpen = false
+    }
+  }
+
+  closeCartModal(): void {
+    this.isCartModalOpen = false
+    if (this.userId) {
+      this.loadCartItemCount()
     }
   }
 

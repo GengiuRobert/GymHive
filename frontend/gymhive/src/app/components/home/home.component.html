@@ -1,6 +1,6 @@
 <div class="home-container">
 
-    <app-loading-spinner/>
+    <app-loading-spinner />
 
     <section class="hero-section">
         <div class="hero-content">
@@ -43,7 +43,8 @@
                         <span class="current-price">${{ product.price.toFixed(2) }}</span>
                     </div>
                     <button class="btn btn-add-to-cart" (click)="openProductDetails(product)">See More</button>
-                    <button class="btn btn-add-to-cart">Add to Cart</button>
+                    <button class="btn btn-add-to-cart" (click)="addToCart(product)" [disabled]="isAddingToCart">Add to
+                        Cart</button>
 
 
                 </div>
