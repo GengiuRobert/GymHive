@@ -6,6 +6,7 @@ import { Product } from '../../models/product.model';
 
 import { UserService } from '../../services/user.service';
 import { ShoppingCartService } from '../../services/shopping-cart.service';
+import { WishlistService } from '../../services/wishlist.service';
 
 @Component({
   selector: 'app-product-details-modal',
@@ -18,14 +19,19 @@ export class ProductDetailsModalComponent implements OnInit, OnChanges {
   @Input() isOpen = false
   @Output() closeModal = new EventEmitter<void>()
   @Output() productAdded = new EventEmitter<{ product: Product, quantity: number }>()
+  @Output() wishlistUpdated = new EventEmitter<{ product: Product; added: boolean }>
 
   quantity = 1
+
   isAddingToCart = false
+  isInWishlist = false
+  isWishlistProcessing = false
+
   userId: string | null = null
   cartId: string | null = null
-  maxQuantity = 10
+  wishlistId: string | null = null
 
-  constructor(private userService: UserService, private shoppingCartService: ShoppingCartService) { }
+  constructor(private userService: UserService, private shoppingCartService: ShoppingCartService, private wishListService: WishlistService) { }
 
   ngOnInit(): void {
 
@@ -33,8 +39,10 @@ export class ProductDetailsModalComponent implements OnInit, OnChanges {
       if (user) {
         this.userId = user.id
         this.loadCart()
+        this.loadWishlist()
       } else {
         this.userId = null
+        this.wishlistId = null
       }
     })
 
@@ -44,6 +52,9 @@ export class ProductDetailsModalComponent implements OnInit, OnChanges {
 
     if (this.isOpen && this.product) {
       this.quantity = 1
+      if (this.userId) {
+        this.checkIfInWishlist()
+      }
     }
 
   }
@@ -62,6 +73,90 @@ export class ProductDetailsModalComponent implements OnInit, OnChanges {
       }
     })
 
+  }
+
+  loadWishlist() {
+    if (!this.userId) return
+
+    this.wishListService.getWishlistByUserId(this.userId).subscribe({
+      next: (wishlist) => {
+        this.wishlistId = wishlist?.wishListId || null
+        if (this.product && this.wishlistId) {
+          this.checkIfInWishlist()
+        }
+      },
+      error: (err) => {
+        console.error("Error loading wishlist: " + err)
+        this.wishlistId = null
+      },
+    })
+  }
+
+  checkIfInWishlist() {
+    if (!this.product || !this.wishlistId || !this.userId) {
+      this.isInWishlist = false
+      return
+    }
+
+    this.wishListService.getByWishlistId(this.wishlistId).subscribe({
+      next: (wishlist) => {
+        if (wishlist && wishlist.favoriteProducts) {
+          this.isInWishlist = wishlist.favoriteProducts.some((p) => p.productId === this.product?.productId)
+        } else {
+          this.isInWishlist = false
+        }
+      },
+      error: (err) => {
+        console.error("Error checking wishlist: " + err)
+        this.isInWishlist = false
+      },
+    })
+  }
+
+  toggleWishlist() {
+    if (!this.product || !this.userId) return
+
+    this.isWishlistProcessing = true
+
+    this.addOrRemoveFromWishlist()
+
+  }
+
+  addOrRemoveFromWishlist() {
+    if (!this.product || !this.wishlistId) {
+      this.isWishlistProcessing = false
+      return
+    }
+
+    if (this.isInWishlist) {
+      this.wishListService.removeProductWishList(this.wishlistId, this.product.productId!).subscribe({
+        next: () => {
+          this.isInWishlist = false
+          this.isWishlistProcessing = false
+          this.wishlistUpdated.emit({ product: this.product!, added: false })
+          this.wishListService.notifyWishListUpdated()
+        },
+        error: (err) => {
+          console.error("Error removing from wishlist:", err)
+          this.isWishlistProcessing = false
+          this.wishListService.notifyWishListUpdated()
+        },
+      })
+    } else {
+      this.wishListService.addProductToWishList(this.wishlistId, this.product).subscribe({
+        next: () => {
+          this.isInWishlist = true
+          this.isWishlistProcessing = false
+          this.wishlistUpdated.emit({ product: this.product!, added: true })
+          this.wishListService.notifyWishListUpdated()
+        },
+        error: (err) => {
+          console.error("Error adding to wishlist:", err)
+          this.isWishlistProcessing = false
+          this.wishListService.notifyWishListUpdated()
+        },
+      })
+    }
   }
 
   addToCart(): void {

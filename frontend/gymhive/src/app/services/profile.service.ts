@@ -31,7 +31,7 @@ export class UserProfileService {
         return this.http.get(my_url);
     }
 
-    updateUserProfile(userId: string | undefined, updatedUser: UserProfile): Observable<any>{
+    updateUserProfile(userId: string | null, updatedUser: UserProfile): Observable<any>{
         let my_url = this.baseUrl + "/update-profile-by-id/" + userId;
 
         return this.http.put(my_url,updatedUser);
