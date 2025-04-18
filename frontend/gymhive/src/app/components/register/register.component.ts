@@ -6,10 +6,13 @@ import { RouterModule } from "@angular/router"
 import { UserService } from "../../services/user.service"
 import { UserProfileService } from "../../services/profile.service"
 import { ShoppingCartService } from "../../services/shopping-cart.service"
+import { WishlistService } from "../../services/wishlist.service"
 
 import { RegisterData } from "../../models/register.model"
 import { AuthResponseData } from "../../models/auth.model"
 import { ShoppingCart } from "../../models/shopping-cart.model"
+import { WishList } from "../../models/wishlist.model"
+
 
 @Component({
   selector: "app-register",
@@ -20,7 +23,10 @@ import { ShoppingCart } from "../../models/shopping-cart.model"
 })
 export class RegisterComponent {
 
-  constructor(private userService: UserService, private profileService: UserProfileService, private shoppingCarService: ShoppingCartService) { }
+  constructor(private userService: UserService,
+    private profileService: UserProfileService,
+    private shoppingCartService: ShoppingCartService,
+    private wishListService: WishlistService) { }
 
   userData: RegisterData = {
     firstName: "",
@@ -69,12 +75,26 @@ export class RegisterComponent {
           userEmail: this.userData.email,
         };
 
-        this.shoppingCarService.createShoppingCart(newCart).subscribe(
+        this.shoppingCartService.createShoppingCart(newCart).subscribe(
           (cartResponse) => {
             console.log("Shopping cart created:", cartResponse);
           },
           (cartError) => {
             console.error("Error creating shopping cart:", cartError);
+          }
+        );
+
+        const newWishList: WishList = {
+          userId: response.localId,
+          userEmail: this.userData.email,
+        }
+
+        this.wishListService.createWishList(newWishList).subscribe(
+          (wishlistResponse) => {
+            console.log("Wishlist created:", wishlistResponse);
+          },
+          (wishlistError) => {
+            console.error("Error creating wishlist:", wishlistError);
           }
         );
 

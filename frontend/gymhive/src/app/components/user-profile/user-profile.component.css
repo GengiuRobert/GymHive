@@ -537,9 +537,11 @@
     text-align: center;
     max-width: 100%;
     white-space: normal;
+    margin-bottom: 5px;
 }
 
 .btn-primary {
+    width: 100%;
     background-color: #ff6b00;
     color: #ffffff;
 }
@@ -590,4 +592,25 @@
 
 .icon-x:before {
     content: "✕";
+}
+
+.btn-add-to-cart {
+    width: 100%;
+    background-color: #333;
+    color: #ffffff;
+    padding: 0.75rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-bottom: 5px;
+}
+
+.btn-add-to-cart i {
+    font-size: 1.125rem;
+}
+
+.btn-add-to-cart:hover {
+    background-color: #ff6b00;
 }

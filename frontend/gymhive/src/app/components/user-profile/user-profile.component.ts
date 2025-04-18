@@ -1,27 +1,48 @@
-import { Component, type OnInit } from "@angular/core"
+import { Component, OnDestroy, type OnInit } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule } from "@angular/forms"
 import { RouterModule } from "@angular/router"
+import { finalize, Subscription } from "rxjs"
 
 import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
+import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component";
+
+import { UserProfile } from "../../models/profile.model"
+import { Product } from "../../models/product.model";
 
 import { UserService } from "../../services/user.service"
 import { UserProfileService } from "../../services/profile.service"
 import { SpinnerService } from "../../services/spinner.service"
-
-import { UserProfile } from "../../models/profile.model"
-import { finalize } from "rxjs"
-import { error } from "console";
+import { WishlistService } from "../../services/wishlist.service"
+import { WishList } from "../../models/wishlist.model"
+import { ShoppingCartService } from "../../services/shopping-cart.service"
 
 @Component({
   selector: "app-user-profile",
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, LoadingSpinnerComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LoadingSpinnerComponent, ProductDetailsModalComponent],
   templateUrl: "./user-profile.component.html",
   styleUrls: ["./user-profile.component.css"],
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, OnDestroy {
+
   activeTab = "profile"
+  isEditing = false
+  isSaving = false
+  isModalOpen = false
+  isAddingToCart = false
+
+  successMessage = ""
+
+  userId: string | null = null
+  cartId: string | null = null
+  wishListId: string | null = null
+  selectedProduct: Product | null = null
+  editedUser: any
+  userWishlist: WishList | null = null
+
+  private userSubscription: Subscription | null = null
+  private wishListUpdateSubscription: Subscription | null = null
 
   user: UserProfile = {
     firstName: "",
@@ -36,8 +57,6 @@ export class UserProfileComponent implements OnInit {
       country: "",
     },
   }
-
-  editedUser: any
 
   orders = [
     {
@@ -59,44 +78,83 @@ export class UserProfileComponent implements OnInit {
     },
   ]
 
-  wishlist = [
-    {
-      id: 1,
-      name: "Smart Fitness Watch",
-      price: 199.99,
-      image: "https://via.placeholder.com/150?text=Fitness+Watch",
-    },
-    {
-      id: 2,
-      name: "Yoga Mat Premium",
-      price: 59.99,
-      image: "https://via.placeholder.com/150?text=Yoga+Mat",
-    },
-  ]
-
-  isEditing = false
-  isSaving = false
-  successMessage = ""
-  userId: string | undefined = ""
-
-  constructor(private userService: UserService, private profileService: UserProfileService, private spinnerService: SpinnerService) { }
+  constructor(private userService: UserService,
+    private profileService: UserProfileService,
+    private spinnerService: SpinnerService,
+    private wishListService: WishlistService,
+    private shoppingCartService: ShoppingCartService) { }
 
   ngOnInit(): void {
     this.spinnerService.showSpinner();
     this.loadUserProfile();
   }
 
+  ngOnDestroy(): void {
+    if (this.userSubscription) {
+      this.userSubscription.unsubscribe()
+    }
+    if (this.wishListUpdateSubscription) {
+      this.wishListUpdateSubscription.unsubscribe()
+    }
+  }
+
+  ngOnChanges(): void {
+    if (this.userId) {
+      this.loadUserWishList(this.userId)
+    }
+  }
+
   loadUserProfile() {
-    this.userId = this.userService.getId();
-    this.profileService.getUserProfile(this.userId).pipe(finalize(() => this.spinnerService.hideSpinner())).subscribe(
-      (response) => {
-        console.log("profile component" + JSON.stringify(response));
-        this.user = response;
-      },
-      (error) => {
-        console.log("profile component error:  " + error);
+    this.userSubscription = this.userService.user.subscribe((user) => {
+      if (user) {
+        this.userId = user.id
+
+        this.profileService.getUserProfile(this.userId).pipe(finalize(() => this.spinnerService.hideSpinner())).subscribe(
+          (response) => {
+            console.log("profile component" + JSON.stringify(response));
+            this.user = response;
+          },
+          (error) => {
+            console.log("profile component error:  " + error);
+          }
+        )
+
+        this.loadUserCart(this.userId)
+        this.loadUserWishList(this.userId);
+
+        this.wishListUpdateSubscription = this.wishListService.wishListUpdated$.subscribe(() => {
+          if (this.userId) {
+            this.loadUserWishList(this.userId)
+          }
+        })
+
       }
-    )
+    })
+
+  }
+
+  loadUserWishList(userId: string) {
+    this.wishListService.getWishlistByUserId(userId).subscribe(
+      (wishListResponse) => {
+        this.userWishlist = wishListResponse
+        console.log("profile component wishlist success");
+      }),
+      (error: any) => {
+        console.log("profile component wishlist error:  " + error);
+      }
+  }
+
+  loadUserCart(userId: string): void {
+
+    this.shoppingCartService.getShoppingCartByUserId(userId).subscribe({
+      next: (cart) => {
+        this.cartId = cart.shoppingCartId || null
+      },
+      error: (err) => {
+        console.error("Error loading cart:", err)
+        this.cartId = null
+      },
+    })
   }
 
   setActiveTab(tab: string): void {
@@ -141,14 +199,47 @@ export class UserProfileComponent implements OnInit {
 
   }
 
-  removeFromWishlist(id: number): void {
-    this.wishlist = this.wishlist.filter((item) => item.id !== id)
+  removeFromWishlist(id: string | undefined): void {
+    this.wishListService.removeProductWishList(this.userWishlist?.wishListId, id).subscribe((wishListResponse) => {
+      this.userWishlist = wishListResponse
+    })
+  }
+
+  addToCart(product: Product): void {
+
+    if (!this.userId) {
+      console.log("Please log in to add items to your cart.")
+      return
+    }
+
+    this.isAddingToCart = true
+
+    if (this.cartId) {
+      this.shoppingCartService.addProductToCart(this.cartId, product).subscribe({
+        next: () => {
+          this.isAddingToCart = false
+          this.shoppingCartService.notifyCartUpdated()
+        },
+        error: (err) => {
+          console.error("Error adding product to cart:", err)
+          this.isAddingToCart = false
+        },
+      })
+    }
   }
 
   onLogOut() {
     this.userService.logOutUser();
   }
 
+  openProductDetails(product: Product) {
+    this.selectedProduct = product
+    this.isModalOpen = true
+  }
+
+  closeModal(): void {
+    this.isModalOpen = false
+  }
 
 }
 
