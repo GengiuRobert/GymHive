@@ -64,6 +64,18 @@ public class ShoppingCartService {
         return shoppingCart;
     }
 
+    public ShoppingCart removeAllOfProduct(String shoppingCartId, String productId) {
+        ShoppingCart cart = shoppingCartRepository.getShoppingCartById(shoppingCartId);
+        if (cart == null) {
+            throw new IllegalArgumentException("Shopping Cart not found with ID: " + shoppingCartId);
+        }
+
+        cart.removeAllProducts(productId);
+        shoppingCartRepository.update(shoppingCartId, cart);
+
+        return cart;
+    }
+
     public ShoppingCart getShoppingCartByUserId(String userId) {
         if(userId == null || userId.trim().isEmpty()){
             throw new IllegalArgumentException("User id cannot be null or empty");

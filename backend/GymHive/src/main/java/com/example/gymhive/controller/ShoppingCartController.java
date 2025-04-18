@@ -44,10 +44,13 @@ public class ShoppingCartController {
         return this.shoppingCartService.updateShoppingCart(shoppingCartId,updatedShoppingCart);
     }
 
-    @PutMapping("/add-product/{shoppingCartId}/{quantity}")
+    @PutMapping("/add-product/{shoppingCartId}")
     @ResponseBody
-    public ShoppingCart addProductToCart(@PathVariable String shoppingCartId, @PathVariable int quantity,
-                                         @RequestBody Product product) {
+    public ShoppingCart addProductToCart(
+            @PathVariable String shoppingCartId,
+            @RequestBody Product product,
+            @RequestParam(name = "quantity", defaultValue = "1") int quantity
+    ) {
         return shoppingCartService.addProductToShoppingCart(shoppingCartId, product, quantity);
     }
 
@@ -55,6 +58,15 @@ public class ShoppingCartController {
     @ResponseBody
     public ShoppingCart removeProductFromCart(@PathVariable String shoppingCartId, @PathVariable String productId) {
         return shoppingCartService.removeProductFromShoppingCart(shoppingCartId, productId);
+    }
+
+    @DeleteMapping("/remove-all/{shoppingCartId}/{productId}")
+    @ResponseBody
+    public ShoppingCart removeAllOfProduct(
+            @PathVariable String shoppingCartId,
+            @PathVariable String productId
+    ) {
+        return shoppingCartService.removeAllOfProduct(shoppingCartId, productId);
     }
 
     @GetMapping("/get-all-shopping-carts")
