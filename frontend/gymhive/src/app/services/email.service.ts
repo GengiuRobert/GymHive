@@ -18,4 +18,8 @@ export class EmailService {
     createOrder(payload: EmailOrderRequest): Observable<string> {
         return this.http.post(`${this.baseUrl}/email/add-order`, payload, { responseType: 'text' });
     }
+
+    getOrdersByUserId(userId: string): Observable<EmailOrderRequest> {
+        return this.http.get<EmailOrderRequest>(`${this.baseUrl}/email/get-orders-by-user-id/${userId}`)
+    }
 }

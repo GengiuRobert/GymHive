@@ -83,6 +83,10 @@
                 @if (formGroup.get('expiryYear')?.invalid && formGroup.get('expiryYear')?.touched) {
                 <div class="error-message">Expiry year is required</div>
                 }
+                @if (formGroup.errors?.['expiryDateInvalid'] && (formGroup.get('expiryYear')?.touched ||
+                formGroup.get('expiryMonth')?.touched)) {
+                <div class="error-message">Card has expired</div>
+                }
             </div>
 
             <div class="form-group">

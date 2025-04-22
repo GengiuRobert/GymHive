@@ -45,7 +45,7 @@
                     (countryChange)="onCountryChange($event)">
                 </app-shipping-form>
                 <div class="form-actions">
-                    <a routerLink="/cart" class="btn-secondary">Back to Cart</a>
+                    <a routerLink="/home" class="btn-secondary">Back to Cart</a>
                     <button type="button" class="btn-primary" [disabled]="!shippingForm.valid" (click)="nextStep()">
                         Continue to Payment
                     </button>

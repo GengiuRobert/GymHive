@@ -1,5 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { concatMap, finalize, Subscription } from 'rxjs';
 import { Router } from "@angular/router";
 import { CommonModule } from '@angular/common';
@@ -53,7 +53,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     private spinnerService: SpinnerService
   ) {
     // Get current year for default value
-    const currentYear = new Date().getFullYear().toString()
+    const now = new Date();
+    const currentYear = now.getFullYear().toString();
+    const currentMonth = (now.getMonth() + 1).toString().padStart(2, '0');
 
     this.shippingForm = this.fb.group({
       fullName: ["", [Validators.required]],
@@ -72,7 +74,9 @@ export class CheckoutComponent implements OnInit, OnDestroy {
       expiryMonth: ["", [Validators.required, Validators.pattern(/^(0[1-9]|1[0-2])$/)]],
       expiryYear: [currentYear, [Validators.required]],
       cvv: ["", [Validators.required, Validators.pattern(/^\d{3,4}$/)]],
-    })
+    }, {
+      validators: [this.expiryDateValidator(currentYear, currentMonth)]
+    });
   }
 
   ngOnInit(): void {
@@ -137,10 +141,8 @@ export class CheckoutComponent implements OnInit, OnDestroy {
   prefillShippingForm(): void {
     if (!this.userProfile) return
 
-    // Create full name from first and last name
     const fullName = `${this.userProfile.firstName} ${this.userProfile.lastName}`.trim()
 
-    // Prefill the form with user profile data
     this.shippingForm.patchValue({
       fullName: fullName,
       email: this.userProfile.userEmail,
@@ -199,7 +201,6 @@ export class CheckoutComponent implements OnInit, OnDestroy {
     } else if (this.step === 2 && this.paymentForm.valid) {
       this.step = 3
     } else {
-      // Force validation to show errors
       if (this.step === 1) {
         this.markFormGroupTouched(this.shippingForm)
       } else if (this.step === 2) {
@@ -292,6 +293,19 @@ export class CheckoutComponent implements OnInit, OnDestroy {
         }
       });
     }
+  }
+
+  expiryDateValidator(minYear: string, minMonth: string): ValidatorFn {
+    return (group: AbstractControl): ValidationErrors | null => {
+      const year = group.get('expiryYear')?.value;
+      const month = group.get('expiryMonth')?.value;
+      if (!year || !month) { return null; }
+
+      if (year < minYear || (year === minYear && month < minMonth)) {
+        return { expiryDateInvalid: true };
+      }
+      return null;
+    };
   }
 
   private calculateTax(items: CartItem[]): number {
