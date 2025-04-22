@@ -21,6 +21,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 @Service
 public class EmailService {
@@ -37,6 +38,14 @@ public class EmailService {
 
     public String addOrderEmail(OrderEmailRequest orderEmailRequest) {
         return orderRepository.save(orderEmailRequest);
+    }
+
+    public List<OrderEmailRequest> getOrdersByUserId(String customerId) {
+        try {
+            return orderRepository.findByUserId(customerId);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Failed to load orders for user " + customerId, e);
+        }
     }
 
     public void sendOrderConfirmation(OrderEmailRequest req) throws MessagingException, UnsupportedEncodingException {
