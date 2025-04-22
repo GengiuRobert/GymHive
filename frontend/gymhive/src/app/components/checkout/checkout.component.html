@@ -1,0 +1,118 @@
+<div class="checkout-container">
+    <div class="checkout-header">
+        <h1>Checkout</h1>
+        <div class="checkout-steps">
+            <div class="step" [class.active]="step >= 1" [class.completed]="step > 1">
+                <div class="step-number">1</div>
+                <div class="step-label">Shipping</div>
+            </div>
+            <div class="step-connector" [class.active]="step > 1"></div>
+            <div class="step" [class.active]="step >= 2" [class.completed]="step > 2">
+                <div class="step-number">2</div>
+                <div class="step-label">Payment</div>
+            </div>
+            <div class="step-connector" [class.active]="step > 2"></div>
+            <div class="step" [class.active]="step >= 3">
+                <div class="step-number">3</div>
+                <div class="step-label">Review</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="checkout-content">
+        <div class="checkout-main">
+
+            <!-- Empty cart state -->
+            @if (!cart || !cart.products || cart.products.length === 0) {
+            <div class="empty-cart">
+                <h2>Your cart is empty</h2>
+                <p>Add some products to your cart before proceeding to checkout.</p>
+                <a routerLink="/" class="btn-primary">Continue Shopping</a>
+            </div>
+            }
+
+            <!-- Checkout steps -->
+            @if (cart && cart.products && cart.products.length > 0) {
+            <!-- Step 1: Shipping Information -->
+            @if (step === 1) {
+            <div class="checkout-step-content">
+                <h2>Shipping Information</h2>
+                <app-shipping-form [formGroup]="shippingForm" [userProfile]="userProfile"
+                    (formSubmit)="onShippingFormSubmit($event)" (autofillProfile)="useProfileData()"
+                    (countryChange)="onCountryChange($event)">
+                </app-shipping-form>
+                <div class="form-actions">
+                    <a routerLink="/cart" class="btn-secondary">Back to Cart</a>
+                    <button type="button" class="btn-primary" [disabled]="!shippingForm.valid" (click)="nextStep()">
+                        Continue to Payment
+                    </button>
+                </div>
+            </div>
+            }
+
+            <!-- Step 2: Payment Information -->
+            @if (step === 2) {
+            <div class="checkout-step-content">
+                <h2>Payment Information</h2>
+                <app-payment-form [formGroup]="paymentForm" (formSubmit)="onPaymentFormSubmit($event)">
+                </app-payment-form>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" (click)="previousStep()">Back to Shipping</button>
+                    <button type="button" class="btn-primary" [disabled]="!paymentForm.valid" (click)="nextStep()">
+                        Review Order
+                    </button>
+                </div>
+            </div>
+            }
+
+            <!-- Step 3: Review Order -->
+            @if (step === 3) {
+            <div class="checkout-step-content">
+                <h2>Review Your Order</h2>
+
+                <div class="review-sections">
+                    <div class="review-section">
+                        <h3>Shipping Information</h3>
+                        <div class="review-details">
+                            <p><strong>{{ shippingForm.value.fullName }}</strong></p>
+                            <p>{{ shippingForm.value.address }}</p>
+                            <p>{{ shippingForm.value.city }}, {{ shippingForm.value.state }} {{
+                                shippingForm.value.zipCode }}</p>
+                            <p>{{ shippingForm.value.country }}</p>
+                            <p>{{ shippingForm.value.phone }}</p>
+                            <p>{{ shippingForm.value.email }}</p>
+                        </div>
+                        <button type="button" class="btn-link" (click)="step = 1">Edit</button>
+                    </div>
+
+                    <div class="review-section">
+                        <h3>Payment Method</h3>
+                        <div class="review-details">
+                            <p><strong>Credit Card</strong></p>
+                            <p>{{ paymentForm.value.cardName }}</p>
+                            <p>**** **** **** {{ paymentForm.value.cardNumber.slice(-4) }}</p>
+                            <p>Expires: {{ paymentForm.value.expiryMonth }}/{{ paymentForm.value.expiryYear }}</p>
+                        </div>
+                        <button type="button" class="btn-link" (click)="step = 2">Edit</button>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" (click)="previousStep()">Back to Payment</button>
+                    <button type="button" class="btn-primary" (click)="placeOrder()">
+                        Place Order
+                    </button>
+                </div>
+            </div>
+            }
+            }
+        </div>
+
+        <!-- Order Summary -->
+        @if (cart && cart.products && cart.products.length > 0) {
+        <div class="checkout-sidebar">
+            <app-order-summary [cart]="cart"></app-order-summary>
+        </div>
+        }
+    </div>
+</div>
