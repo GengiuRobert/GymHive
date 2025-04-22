@@ -1,0 +1,113 @@
+<form [formGroup]="formGroup" (ngSubmit)="onSubmit()">
+    <div class="payment-form">
+        <div class="credit-card">
+            <div class="card-front">
+                <div class="card-logo">
+                    <div class="card-chip"></div>
+                    <div class="card-brand" [ngClass]="detectedCardType?.icon || ''">
+                    </div>
+                </div>
+                <div class="card-number">
+                    <span>{{ formGroup.get('cardNumber')?.value ? '**** **** **** ' +
+                        (formGroup.get('cardNumber')?.value.slice(-4) || '****') : '**** **** **** ****' }}</span>
+                </div>
+                <div class="card-details">
+                    <div class="card-holder">
+                        <label>Card Holder</label>
+                        <div>{{ formGroup.get('cardName')?.value || 'YOUR NAME' }}</div>
+                    </div>
+                    <div class="card-expiry">
+                        <label>Expires</label>
+                        <div>{{ formGroup.get('expiryMonth')?.value || 'MM' }}/{{ formGroup.get('expiryYear')?.value ?
+                            formGroup.get('expiryYear')?.value.slice(-2) : 'YY' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="cardNumber">Card Number</label>
+                <div class="card-input-container">
+                    <input type="text" id="cardNumber" formControlName="cardNumber" placeholder="1234 5678 9012 3456"
+                        (input)="formatCardNumber($event)" maxlength="16">
+                    @if (detectedCardType) {
+                    <div class="card-type-indicator" [ngClass]="detectedCardType.icon">
+                        <span class="card-type-name">{{ detectedCardType.name }}</span>
+                    </div>
+                    }
+                </div>
+                @if (formGroup.get('cardNumber')?.invalid && formGroup.get('cardNumber')?.touched) {
+                <div class="error-message">
+                    @if (formGroup.get('cardNumber')?.errors?.['required']) {
+                    Card number is required
+                    } @else if (formGroup.get('cardNumber')?.errors?.['pattern']) {
+                    Please enter a valid card number
+                    }
+                </div>
+                }
+                @if (formGroup.get('cardNumber')?.value && !isValidCardLength(formGroup.get('cardNumber')?.value)) {
+                <div class="error-message">
+                    Invalid card number length for {{ detectedCardType?.name }}
+                </div>
+                }
+            </div>
+
+            <div class="form-group full-width">
+                <label for="cardName">Cardholder Name</label>
+                <input type="text" id="cardName" formControlName="cardName" placeholder="John Doe">
+                @if (formGroup.get('cardName')?.invalid && formGroup.get('cardName')?.touched) {
+                <div class="error-message">Cardholder name is required</div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="expiryMonth">Expiry Month</label>
+                <select id="expiryMonth" formControlName="expiryMonth">
+                    @for (month of months; track month) {
+                    <option [value]="month">{{ month }}</option>
+                    }
+                </select>
+                @if (formGroup.get('expiryMonth')?.invalid && formGroup.get('expiryMonth')?.touched) {
+                <div class="error-message">Expiry month is required</div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="expiryYear">Expiry Year</label>
+                <select id="expiryYear" formControlName="expiryYear">
+                    @for (year of years; track year) {
+                    <option [value]="year">{{ year }}</option>
+                    }
+                </select>
+                @if (formGroup.get('expiryYear')?.invalid && formGroup.get('expiryYear')?.touched) {
+                <div class="error-message">Expiry year is required</div>
+                }
+                @if (formGroup.errors?.['expiryDateInvalid'] && (formGroup.get('expiryYear')?.touched ||
+                formGroup.get('expiryMonth')?.touched)) {
+                <div class="error-message">Card has expired</div>
+                }
+            </div>
+
+            <div class="form-group">
+                <label for="cvv">
+                    CVV
+                    @if (detectedCardType) {
+                    <span class="cvv-info">({{ detectedCardType.cvvLength }} digits)</span>
+                    }
+                </label>
+                <input type="password" id="cvv" formControlName="cvv" placeholder="123"
+                    [maxlength]="detectedCardType?.cvvLength || 4">
+                @if (formGroup.get('cvv')?.invalid && formGroup.get('cvv')?.touched) {
+                <div class="error-message">
+                    @if (formGroup.get('cvv')?.errors?.['required']) {
+                    CVV is required
+                    } @else if (formGroup.get('cvv')?.errors?.['pattern']) {
+                    Please enter a valid CVV
+                    }
+                </div>
+                }
+            </div>
+        </div>
+    </div>
+</form>

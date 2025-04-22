@@ -9,6 +9,7 @@ import { ProductDetailsModalComponent } from "../product-details-modal/product-d
 
 import { UserProfile } from "../../models/profile.model"
 import { Product } from "../../models/product.model";
+import { EmailOrderRequest } from "../../models/email-request.model"
 
 import { UserService } from "../../services/user.service"
 import { UserProfileService } from "../../services/profile.service"
@@ -16,6 +17,7 @@ import { SpinnerService } from "../../services/spinner.service"
 import { WishlistService } from "../../services/wishlist.service"
 import { WishList } from "../../models/wishlist.model"
 import { ShoppingCartService } from "../../services/shopping-cart.service"
+import { EmailService } from "../../services/email.service"
 
 @Component({
   selector: "app-user-profile",
@@ -40,6 +42,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   selectedProduct: Product | null = null
   editedUser: any
   userWishlist: WishList | null = null
+  userOrders: EmailOrderRequest[] = []
+  orders: any[] = []
 
   private userSubscription: Subscription | null = null
   private wishListUpdateSubscription: Subscription | null = null
@@ -58,31 +62,13 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     },
   }
 
-  orders = [
-    {
-      id: "ORD-12345",
-      date: "2023-06-15",
-      total: 129.99,
-      status: "Delivered",
-      items: [{ name: "Premium Adjustable Dumbbell Set", quantity: 1, price: 129.99 }],
-    },
-    {
-      id: "ORD-12346",
-      date: "2023-05-20",
-      total: 89.97,
-      status: "Delivered",
-      items: [
-        { name: "Performance Whey Protein", quantity: 1, price: 49.99 },
-        { name: "Fitness Resistance Bands", quantity: 1, price: 39.98 },
-      ],
-    },
-  ]
-
-  constructor(private userService: UserService,
+  constructor(
+    private userService: UserService,
     private profileService: UserProfileService,
     private spinnerService: SpinnerService,
     private wishListService: WishlistService,
-    private shoppingCartService: ShoppingCartService) { }
+    private shoppingCartService: ShoppingCartService,
+    private ordersService: EmailService) { }
 
   ngOnInit(): void {
     this.spinnerService.showSpinner();
@@ -120,7 +106,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         )
 
         this.loadUserCart(this.userId)
-        this.loadUserWishList(this.userId);
+        this.loadUserWishList(this.userId)
+        this.loadUserOrders(this.userId)
 
         this.wishListUpdateSubscription = this.wishListService.wishListUpdated$.subscribe(() => {
           if (this.userId) {
@@ -154,6 +141,60 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         console.error("Error loading cart:", err)
         this.cartId = null
       },
+    })
+  }
+
+  loadUserOrders(userId: string): void {
+
+    this.ordersService.getOrdersByUserId(userId).subscribe({
+      next: (ordersData) => {
+
+        if (Array.isArray(ordersData)) {
+          this.userOrders = ordersData
+        } else {
+          this.userOrders = ordersData ? [ordersData] : []
+        }
+
+        this.processOrdersForDisplay()
+
+      },
+      error: (err) => {
+        console.error("Error loading orders:", err)
+        this.userOrders = []
+        this.orders = []
+      },
+    })
+  }
+
+  processOrdersForDisplay(): void {
+    this.orders = this.userOrders.map((order) => {
+
+      const subtotal = order.items.reduce((sum, item) => {
+        return sum + item.product.price * item.quantity
+      }, 0)
+
+      const total = subtotal + order.shippingCost + order.tax
+
+      const displayItems = order.items.map((item) => ({
+        name: item.product.name,
+        quantity: item.quantity,
+        price: item.product.price,
+        image: item.product.imageUrl,
+      }))
+
+      return {
+        id: order.orderID,
+        date: order.orderDate.split('T')[0],
+        items: displayItems,
+        subtotal: subtotal,
+        shipping: order.shippingCost,
+        tax: order.tax,
+        total: total,
+      }
+    })
+
+    this.orders.sort((a, b) => {
+      return new Date(b.date).getTime() - new Date(a.date).getTime()
     })
   }
 

@@ -15,6 +15,9 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 public class ProductDTO {
 
+    @NotBlank(message = "Product ID cannot be null or empty")
+    private String productId;
+
     @NotBlank(message = "Product name cannot be null or empty")
     private String name;
 

@@ -6,6 +6,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { UserProfileComponent } from './components/user-profile/user-profile.component';
 import { CategoryDisplayComponent } from './components/category-display/category-display.component';
 import { NotFoundFallbackComponent } from './components/not-found-fallback/not-found-fallback.component';
+import { CheckoutComponent } from './components/checkout/checkout.component';
 
 export const routes: Routes = [
     { path: '', component: HomeComponent },
@@ -14,6 +15,7 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent },
     { path: 'register', component: RegisterComponent },
     { path: 'account', component: UserProfileComponent },
+    { path: 'checkout', component: CheckoutComponent },
     {
         path: "category/equipment",
         component: CategoryDisplayComponent,

@@ -174,13 +174,16 @@
                             <h3>Order #{{ order.id }}</h3>
                             <p class="order-date">Placed on {{ order.date }}</p>
                         </div>
-                        <div class="order-status" [ngClass]="order.status.toLowerCase()">
+                        <!-- <div class="order-status delivered">
                             {{ order.status }}
-                        </div>
+                        </div> -->
                     </div>
 
                     <div class="order-items">
                         <div class="order-item" *ngFor="let item of order.items">
+                            <div class="item-image" *ngIf="item.image">
+                                <img [src]="item.image" [alt]="item.name" width="40" height="40">
+                            </div>
                             <div class="item-details">
                                 <p class="item-name">{{ item.name }}</p>
                                 <p class="item-quantity">Qty: {{ item.quantity }}</p>
@@ -194,10 +197,10 @@
                             <span>Total:</span>
                             <span class="total-price">${{ order.total.toFixed(2) }}</span>
                         </div>
-                        <div class="order-actions">
-                            <a [routerLink]="['/orders', order.id]" class="btn btn-outline">View Details</a>
+                        <!-- <div class="order-actions">
+                            <a [routerLink]="['/orders', order.orderID]" class="btn btn-outline">View Details</a>
                             <button class="btn btn-secondary">Track Order</button>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
             </div>
@@ -206,7 +209,7 @@
                 <div class="empty-icon">📦</div>
                 <h3>No Orders Yet</h3>
                 <p>You haven't placed any orders yet.</p>
-                <a routerLink="/products" class="btn btn-primary">Start Shopping</a>
+                <a routerLink="/home" class="btn btn-primary">Start Shopping</a>
             </div>
         </div>
 
