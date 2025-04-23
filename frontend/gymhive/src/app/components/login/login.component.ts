@@ -1,12 +1,13 @@
 import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule, NgForm } from "@angular/forms"
-import { RouterModule,Router } from "@angular/router"
+import { RouterModule, Router } from "@angular/router"
 
 import { UserService } from "../../services/user.service"
 
 import { LoginData } from "../../models/login.model"
 import { AuthResponseData } from "../../models/auth.model"
+import { UserActivity } from "../../models/user-activity.model"
 
 
 @Component({
@@ -18,7 +19,7 @@ import { AuthResponseData } from "../../models/auth.model"
 })
 export class LoginComponent {
 
-  constructor(private userService: UserService, private router:Router) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   userData: LoginData = {
     email: "",
@@ -42,8 +43,27 @@ export class LoginComponent {
     this.userService.logInUser(this.userData).subscribe(
       (logInResponse: AuthResponseData) => {
         console.log("Log In successfully:", logInResponse);
-        this.router.navigate(['home']);
+
+        const now = new Date()
+        const pad = (n: number) => n.toString().padStart(2, "0")
+        const date = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}`
+        const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+        const ts = `${date} at ${time}`
+
+        const activity: UserActivity = {
+          userId: logInResponse.localId,
+          userEmail: logInResponse.email,
+          timestamp: ts,
+          action: 'LOGIN'
+        }
+
         form.reset();
+
+        this.userService.recordActivity(activity)
+          .subscribe(() => {
+            this.router.navigate(["/home"])
+          })
+
       },
       (error) => {
         this.errorMessage = "Log-in failed. Please try again.";
