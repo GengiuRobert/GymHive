@@ -19,7 +19,11 @@ export class EmailService {
         return this.http.post(`${this.baseUrl}/email/add-order`, payload, { responseType: 'text' });
     }
 
-    getOrdersByUserId(userId: string): Observable<EmailOrderRequest> {
-        return this.http.get<EmailOrderRequest>(`${this.baseUrl}/email/get-orders-by-user-id/${userId}`)
+    getOrdersByUserId(userId: string): Observable<EmailOrderRequest[]> {
+        return this.http.get<EmailOrderRequest[]>(`${this.baseUrl}/email/get-orders-by-user-id/${userId}`)
+    }
+
+    getOrderByUserIdAndOrderId(userId: string, firestoreID: string): Observable<EmailOrderRequest> {
+        return this.http.get<EmailOrderRequest>(`${this.baseUrl}/email/get-specific-order-by-order-id/${userId}/${firestoreID}`)
     }
 }

@@ -6,6 +6,8 @@ import { finalize, Subscription } from "rxjs"
 
 import { LoadingSpinnerComponent } from "../loading-spinner/loading-spinner.component";
 import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component";
+import { XmlReceiptComponent } from "../xml-receipt/xml-receipt.component";
+import { PdfReceiptComponent } from "../pdf-receipt/pdf-receipt.component";
 
 import { UserProfile } from "../../models/profile.model"
 import { Product } from "../../models/product.model";
@@ -22,7 +24,7 @@ import { EmailService } from "../../services/email.service"
 @Component({
   selector: "app-user-profile",
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterModule, LoadingSpinnerComponent, ProductDetailsModalComponent],
+  imports: [CommonModule, FormsModule, RouterModule, LoadingSpinnerComponent, ProductDetailsModalComponent, XmlReceiptComponent, PdfReceiptComponent],
   templateUrl: "./user-profile.component.html",
   styleUrls: ["./user-profile.component.css"],
 })
@@ -148,15 +150,8 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     this.ordersService.getOrdersByUserId(userId).subscribe({
       next: (ordersData) => {
-
-        if (Array.isArray(ordersData)) {
-          this.userOrders = ordersData
-        } else {
-          this.userOrders = ordersData ? [ordersData] : []
-        }
-
+        this.userOrders = ordersData
         this.processOrdersForDisplay()
-
       },
       error: (err) => {
         console.error("Error loading orders:", err)
@@ -183,6 +178,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       }))
 
       return {
+        firestoreId: order.firestoreID,
         id: order.orderID,
         date: order.orderDate.split('T')[0],
         items: displayItems,
