@@ -48,6 +48,10 @@ public class EmailService {
         }
     }
 
+    public OrderEmailRequest findByUserIdAndOrderId(String customerID, String orderID) throws InterruptedException, ExecutionException {
+        return orderRepository.findByUserIdAndOrderId(customerID, orderID);
+    }
+
     public void sendOrderConfirmation(OrderEmailRequest req) throws MessagingException, UnsupportedEncodingException {
         Map<String,Object> model = new HashMap<>();
         model.put("customer_name",   req.getCustomerName());
