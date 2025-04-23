@@ -4,7 +4,6 @@ import com.example.gymhive.dto.OrderEmailRequestDto;
 import com.example.gymhive.entity.Address;
 import com.example.gymhive.entity.CartItem;
 import com.example.gymhive.entity.OrderEmailRequest;
-import com.example.gymhive.repository.OrderRepository;
 import org.modelmapper.TypeToken;
 import com.example.gymhive.service.EmailService;
 import jakarta.mail.MessagingException;
@@ -17,6 +16,7 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 @RestController
@@ -51,16 +51,28 @@ public class EmailController {
     }
 
     @GetMapping("/email/get-orders-by-user-id/{userId}")
-    public ResponseEntity<List<OrderEmailRequestDto>> getOrdersByUserId(
+    public ResponseEntity<List<OrderEmailRequest>> getOrdersByUserId(
             @PathVariable String userId) {
 
-        List<OrderEmailRequest> entities = emailService.getOrdersByUserId(userId);
+        List<OrderEmailRequest> orders = emailService.getOrdersByUserId(userId);
+        return ResponseEntity.ok(orders);
+    }
 
-        List<OrderEmailRequestDto> dtos = entities.stream()
-                .map(e -> modelMapper.map(e, OrderEmailRequestDto.class))
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(dtos);
+    @GetMapping("/email/get-specific-order-by-order-id/{customerID}/{orderID}")
+    public ResponseEntity<OrderEmailRequest> getOrderByUserIdAndOrderId(
+            @PathVariable String customerID,
+            @PathVariable String orderID
+    ) {
+        OrderEmailRequest order;
+        try {
+            order = emailService.findByUserIdAndOrderId(customerID, orderID);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
+        if (order == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(order);
     }
 
     private OrderEmailRequest toEntity(OrderEmailRequestDto dto) {

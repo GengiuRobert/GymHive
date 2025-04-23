@@ -197,10 +197,14 @@
                             <span>Total:</span>
                             <span class="total-price">${{ order.total.toFixed(2) }}</span>
                         </div>
-                        <!-- <div class="order-actions">
-                            <a [routerLink]="['/orders', order.orderID]" class="btn btn-outline">View Details</a>
-                            <button class="btn btn-secondary">Track Order</button>
-                        </div> -->
+                        <div class="order-actions">
+                            <app-xml-receipt [userId]="userId!" [orderId]="order.firestoreId || ''"
+                                buttonText="Download Receipt as XML">
+                            </app-xml-receipt>
+                            <app-pdf-receipt [userId]="userId!" [orderId]="order.firestoreId || ''"
+                                buttonText="Download Receipt as PDF">
+                            </app-pdf-receipt>
+                        </div>
                     </div>
                 </div>
             </div>

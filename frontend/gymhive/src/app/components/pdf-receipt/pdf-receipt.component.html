@@ -1,0 +1,4 @@
+<button class="btn-receipt" [class.loading]="isGenerating" [disabled]="isGenerating" (click)="generateReceipt()">
+    <span *ngIf="!isGenerating">{{ buttonText }}</span>
+    <span *ngIf="isGenerating">Generating...</span>
+</button>
