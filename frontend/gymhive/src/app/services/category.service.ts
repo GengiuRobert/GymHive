@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core"
 import { HttpClient } from "@angular/common/http";
-import { forkJoin, map, Observable, of, tap } from "rxjs";
+import { forkJoin, map, Observable, of } from "rxjs";
 
 import { SubCategoryService } from "./subCategory.service";
 import { CacheService } from "./cachedata.service";
@@ -71,6 +71,29 @@ export class CategoryService {
                 return category ? category.categoryName : "";
             })
         );
+    }
+
+    addCategory(categoryData: Category): Observable<string> {
+
+        const my_url = this.baseUrl + '/add-category'
+
+        return this.http.post(my_url, categoryData, { responseType: 'text' })
+    }
+
+    deleteCategoryById(categoryId: string): Observable<string> {
+
+        const my_url = `${this.baseUrl}/delete-category-by-id/${categoryId}`
+
+        return this.http.delete(my_url, { responseType: 'text' })
+
+    }
+
+    updateCategoryById(categoryId: string, updatedCategory: Category): Observable<string> {
+
+        const my_url = `${this.baseUrl}/update-category-by-id/${categoryId}`
+
+        return this.http.put(my_url, updatedCategory, { responseType: "text" })
+
     }
 }
 

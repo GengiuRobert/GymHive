@@ -7,7 +7,6 @@ import com.google.cloud.firestore.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -55,5 +54,15 @@ public class OrderRepository {
         } catch (Exception e) {
             throw new RuntimeException("Failed to fetch order from Firestore", e);
         }
+    }
+
+    public List<OrderEmailRequest> getAllOrders() throws InterruptedException, ExecutionException {
+        CollectionReference col = firestoreService.getCollection("orders");
+        ApiFuture<QuerySnapshot> future = col.get();
+        List<QueryDocumentSnapshot> docs = future.get().getDocuments();
+
+        return docs.stream()
+                .map(d -> d.toObject(OrderEmailRequest.class))
+                .collect(Collectors.toList());
     }
 }

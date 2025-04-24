@@ -5,6 +5,7 @@ import com.example.gymhive.entity.Product;
 import com.example.gymhive.service.ProductService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -43,4 +44,15 @@ public class ProductController {
     @GetMapping("/get-all-products")
     @ResponseBody
     public List<Product> getAllProducts() { return this.productService.getAllProducts(); }
+
+    @GetMapping("/get-product-by-id/{productId}")
+    public ResponseEntity<Product> getProductById(
+            @PathVariable("productId") String productId) {
+
+        Product product = productService.getProductById(productId);
+        if (product == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(product);
+    }
 }

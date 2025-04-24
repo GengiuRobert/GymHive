@@ -52,5 +52,12 @@ public class ProductService {
 
         return productRepository.update(productId,updatedProduct); }
 
+    public Product getProductById(String productId) {
+        if (productId == null || productId.trim().isEmpty()) {
+            throw new IllegalArgumentException("Product ID cannot be null or empty");
+        }
+        return productRepository.findById(productId);
+    }
+
     public List<Product> getAllProducts() { return productRepository.getAll(); }
 }

@@ -1,0 +1,115 @@
+.admin-container {
+    display: flex;
+    height: 100vh;
+    background-color: #121212;
+    color: #ffffff;
+}
+
+.admin-sidebar {
+    width: 250px;
+    background-color: #1a1a1a;
+    transition: width 0.3s ease;
+    overflow: hidden;
+    border-right: 1px solid #2a2a2a;
+}
+
+.admin-sidebar.collapsed {
+    width: 70px;
+}
+
+.admin-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.admin-header {
+    height: 64px;
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+}
+
+.admin-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: #ff6b00;
+    flex: 1;
+}
+
+.admin-header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.toggle-sidebar-btn,
+.header-action-btn {
+    background: none;
+    border: none;
+    color: #ffffff;
+    font-size: 1.2rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
+}
+
+.toggle-sidebar-btn:hover,
+.header-action-btn:hover {
+    background-color: #2a2a2a;
+}
+
+.admin-main {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+}
+
+/* Icons */
+.icon-menu:before {
+    content: "☰";
+}
+
+.icon-bell:before {
+    content: "🔔";
+}
+
+.icon-user:before {
+    content: "👤";
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        z-index: 1000;
+        transform: translateX(-100%);
+        width: 250px;
+    }
+
+    .admin-sidebar:not(.collapsed) {
+        transform: translateX(0);
+    }
+
+    .admin-sidebar.collapsed {
+        transform: translateX(-100%);
+    }
+
+    .admin-content {
+        width: 100%;
+    }
+
+    .admin-header h1 {
+        font-size: 1.2rem;
+    }
+}

@@ -7,12 +7,14 @@ import { Router } from "@angular/router";
 import { LoginData } from "../models/login.model";
 import { User } from "../models/user.model";
 import { AuthResponseData } from "../models/auth.model";
+import { UserActivity } from "../models/user-activity.model";
 
 @Injectable({ providedIn: 'root' })
 
 export class UserService {
 
     private baseUrl = 'http://localhost:8080/api/auth';
+    private activityUrl = 'http://localhost:8080/activity'
     user = new BehaviorSubject<User | null>(null);
 
     constructor(private http: HttpClient, private router: Router) {
@@ -77,7 +79,6 @@ export class UserService {
 
     logOutUser() {
         this.user.next(null);
-        console.log('User logged out!');
         this.router.navigate(['/login']);
     }
 
@@ -123,6 +124,18 @@ export class UserService {
         if (loadedUser.token) {
             this.user.next(loadedUser);
         }
+    }
+
+    recordActivity(userAction: UserActivity): Observable<string> {
+        const my_url = this.activityUrl + '/record-activity'
+
+        return this.http.post(my_url, userAction, { responseType: 'text' })
+    }
+
+    getAllActivities(): Observable<UserActivity[]> {
+        const my_url = this.activityUrl + '/get-all-activities'
+
+        return this.http.get<UserActivity[]>(my_url);
     }
 
 }

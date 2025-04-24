@@ -1,0 +1,32 @@
+<h2 mat-dialog-title>{{ isEdit ? 'Edit Subcategory' : 'Add New Subcategory' }}</h2>
+
+<form [formGroup]="subcategoryForm" (ngSubmit)="onSubmit()">
+    <div mat-dialog-content>
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Subcategory Name</mat-label>
+            <input matInput formControlName="subCategoryName" placeholder="Enter subcategory name">
+            <mat-error *ngIf="subcategoryForm.get('subCategoryName')?.hasError('required')">
+                Subcategory name is required
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Parent Category</mat-label>
+            <mat-select formControlName="parentCategoryId">
+                <mat-option *ngFor="let category of categories" [value]="category.categoryId">
+                    {{ category.categoryName }}
+                </mat-option>
+            </mat-select>
+            <mat-error *ngIf="subcategoryForm.get('parentCategoryId')?.hasError('required')">
+                Parent category is required
+            </mat-error>
+        </mat-form-field>
+    </div>
+
+    <div mat-dialog-actions align="end">
+        <button mat-button type="button" (click)="onCancel()" [disabled]="isLoading">Cancel</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="subcategoryForm.invalid || isLoading">
+            {{ isLoading ? 'Saving...' : (isEdit ? 'Update' : 'Save') }}
+        </button>
+    </div>
+</form>

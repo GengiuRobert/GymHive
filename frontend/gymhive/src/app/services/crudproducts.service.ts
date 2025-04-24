@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { forkJoin, map, Observable, of, switchMap, tap } from "rxjs";
+import { forkJoin, map, mergeMap, Observable, of, switchMap, tap } from "rxjs";
 
 import { Product } from "../models/product.model";
 
@@ -93,5 +93,32 @@ export class ProductService {
                 return [products[index1], products[index2]];
             })
         );
+    }
+
+    getProductById(productId: string): Observable<Product | null> {
+        const url = `${this.baseUrl}/get-product-by-id/${productId}`
+
+        return this.http.get<Product | null>(url).pipe(
+
+            mergeMap(product => {
+
+                if (!product) {
+                    return of(null)
+                }
+
+                return forkJoin({
+                    categoryName: this.categoryService.getCategoryNameByCategoryId(product.categoryId),
+                    subCategoryName: this.subCategoryService.getSubCategoryNameByCategoryId(product.subCategoryId),
+                }).pipe(
+                    map(({ categoryName, subCategoryName }) => {
+                        const catFolder = categoryName.toLowerCase().replace(/\s+/g, '_')
+                        const subCatFolder = subCategoryName.toLowerCase().replace(/\s+/g, '_')
+                        const imagePath = `assets/${catFolder}/${subCatFolder}/${product.imageUrl}`
+
+                        return { ...product, imageUrl: imagePath }
+                    })
+                )
+            })
+        )
     }
 }

@@ -17,7 +17,6 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -73,6 +72,12 @@ public class EmailController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(order);
+    }
+
+    @GetMapping("/email/get-all-orders")
+    public ResponseEntity<List<OrderEmailRequest>> getAllOrders() {
+        List<OrderEmailRequest> orders = emailService.getAllOrders();
+        return ResponseEntity.ok(orders);
     }
 
     private OrderEmailRequest toEntity(OrderEmailRequestDto dto) {

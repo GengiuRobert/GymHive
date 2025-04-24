@@ -37,5 +37,11 @@ export class UserProfileService {
         return this.http.put(my_url,updatedUser);
     }
 
+    getAllProfiles():Observable<UserProfile[]>{
+        let my_url = this.baseUrl + "/get-all-profiles";
+
+        return this.http.get<UserProfile[]>(my_url)
+    }
+
 
 }

@@ -1,7 +1,6 @@
 package com.example.gymhive.repository;
 
 import com.example.gymhive.entity.ShoppingCart;
-import com.example.gymhive.entity.UserProfile;
 import com.example.gymhive.service.FirestoreService;
 import com.google.api.core.ApiFuture;
 import com.google.cloud.firestore.*;

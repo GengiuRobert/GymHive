@@ -20,6 +20,7 @@ import { WishlistService } from "../../services/wishlist.service"
 import { WishList } from "../../models/wishlist.model"
 import { ShoppingCartService } from "../../services/shopping-cart.service"
 import { EmailService } from "../../services/email.service"
+import { UserActivity } from "../../models/user-activity.model"
 
 @Component({
   selector: "app-user-profile",
@@ -266,7 +267,26 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   onLogOut() {
-    this.userService.logOutUser();
+
+    const now = new Date()
+    const pad = (n: number) => n.toString().padStart(2, "0")
+    const date = `${pad(now.getDate())}-${pad(now.getMonth() + 1)}-${now.getFullYear()}`
+    const time = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`
+    const ts = `${date} at ${time}`
+
+    const activity: UserActivity = {
+      userId: this.userId!,
+      userEmail: this.userWishlist?.userEmail!,
+      timestamp: ts,
+      action: 'LOGOUT'
+    }
+
+    this.userService.recordActivity(activity)
+      .subscribe(() => {
+        this.userService.logOutUser()
+        console.log("User LOGGED OUT succesfully")
+      })
+
   }
 
   openProductDetails(product: Product) {
