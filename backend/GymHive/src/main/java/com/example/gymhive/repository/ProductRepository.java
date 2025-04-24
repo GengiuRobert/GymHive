@@ -118,4 +118,23 @@ public class ProductRepository {
             throw new RuntimeException(e);
         }
     }
+
+    public Product findById(String productId) {
+        try {
+            DocumentReference docRef = firestoreService
+                    .getCollection("products")
+                    .document(productId);
+
+            ApiFuture<DocumentSnapshot> future = docRef.get();
+            DocumentSnapshot snapshot = future.get();
+
+            if (snapshot.exists()) {
+                return snapshot.toObject(Product.class);
+            } else {
+                return null;
+            }
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Failed to fetch product by ID", e);
+        }
+    }
 }
