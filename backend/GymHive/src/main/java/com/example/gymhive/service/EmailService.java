@@ -52,6 +52,14 @@ public class EmailService {
         return orderRepository.findByUserIdAndOrderId(customerID, orderID);
     }
 
+    public List<OrderEmailRequest> getAllOrders() {
+        try {
+            return orderRepository.getAllOrders();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException("Failed to load all orders", e);
+        }
+    }
+
     public void sendOrderConfirmation(OrderEmailRequest req) throws MessagingException, UnsupportedEncodingException {
         Map<String,Object> model = new HashMap<>();
         model.put("customer_name",   req.getCustomerName());

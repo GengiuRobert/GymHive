@@ -74,6 +74,12 @@ public class EmailController {
         return ResponseEntity.ok(order);
     }
 
+    @GetMapping("/email/get-all-orders")
+    public ResponseEntity<List<OrderEmailRequest>> getAllOrders() {
+        List<OrderEmailRequest> orders = emailService.getAllOrders();
+        return ResponseEntity.ok(orders);
+    }
+
     private OrderEmailRequest toEntity(OrderEmailRequestDto dto) {
         Type listType = new TypeToken<List<CartItem>>() {}.getType();
         List<CartItem> items = modelMapper.map(dto.getItems(), listType);
