@@ -21,18 +21,18 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public AuthResponse signUp(@RequestBody User user) throws Exception {
+    public AuthResponse signUp(@RequestBody User user) {
         return userService.signUp(user);
     }
 
     @PostMapping("/login")
-    public AuthResponse signIn(@RequestBody User user) throws Exception {
+    public AuthResponse signIn(@RequestBody User user) {
         return userService.logIn(user);
     }
 
     @PostMapping("/verify-email")
     @ResponseBody
-    public String verifyEmail(@RequestBody Map<String, Object> payload) throws Exception {
+    public String verifyEmail(@RequestBody Map<String, Object> payload)  {
         String idToken = payload.get("idToken").toString();
         return userService.sendEmailVerification(idToken);
     }

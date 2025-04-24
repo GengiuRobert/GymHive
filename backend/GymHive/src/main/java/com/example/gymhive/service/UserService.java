@@ -29,35 +29,38 @@ public class UserService {
         }
     }
 
-    public AuthResponse signUp(User user) throws Exception {
+    public AuthResponse signUp(User user) {
         try {
             return userRepository.signUp(user);
         } catch (Exception e) {
-            throw new Exception("[SERVICE] An error occurred during sign-up: " + e.getMessage() +"\n\n");
+            throw new RuntimeException("Sign-up failed: " + e.getMessage(), e);
         }
     }
 
-    public AuthResponse logIn(User user) throws Exception {
+    public AuthResponse logIn(User user) {
         try {
             return userRepository.logIn(user);
         } catch (Exception e) {
-            throw new Exception("[SERVICE] An error occurred during log-in: " + e.getMessage() +"\n\n");
+            throw new RuntimeException("Log-in failed: " + e.getMessage(), e);
         }
     }
 
-    public String sendEmailVerification(String idToken) throws Exception {
+    public String sendEmailVerification(String idToken) {
         try {
             return userRepository.sendEmailVerification(idToken);
-        }catch (Exception e){
-            throw new Exception("[SERVICE] An error occurred during sendEmailVerification: " + e.getMessage() +"\n\n");
+        } catch (Exception e) {
+            throw new RuntimeException("Email verification failed: " + e.getMessage(), e);
         }
     }
 
     public String deleteAccount(String idToken) {
         try {
+            FirebaseAuth.getInstance().verifyIdToken(idToken);
             return userRepository.deleteAccount(idToken);
+        } catch (FirebaseAuthException e) {
+            return "Invalid ID Token! Account deletion failed.";
         } catch (Exception e) {
-            return "Error during account deletion: " + e.getMessage();
+            throw new RuntimeException("Delete account failed: " + e.getMessage(), e);
         }
     }
 }
