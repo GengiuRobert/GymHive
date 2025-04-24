@@ -1,0 +1,71 @@
+<h2 mat-dialog-title>Order Details</h2>
+
+<mat-dialog-content>
+    <div class="order-header">
+        <div class="order-info">
+            <p><strong>Order ID:</strong> {{ data.order.orderID }}</p>
+            <p><strong>Date:</strong> {{ data.order.orderDate }}</p>
+        </div>
+        <div class="customer-info">
+            <p><strong>Customer:</strong> {{ data.order.customerName }}</p>
+            <p><strong>Email:</strong> {{ data.order.customerEmail }}</p>
+            <p><strong>Phone:</strong> {{ data.order.phone }}</p>
+        </div>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="shipping-address">
+        <h3>Shipping Address</h3>
+        <p>{{ data.order.address.street }}</p>
+        <p>{{ data.order.address.city }}, {{ data.order.address.state }} {{ data.order.address.zipCode }}</p>
+        <p>{{ data.order.address.country }}</p>
+    </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="order-items">
+        <h3>Order Items</h3>
+        <table class="items-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let item of data.order.items">
+                    <td>{{ item.product.name }}</td>
+                    <td>${{ item.product.price.toFixed(2) }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>${{ (item.product.price * item.quantity).toFixed(2) }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="order-summary">
+        <div class="summary-row">
+            <span>Subtotal:</span>
+            <span>${{ subtotal.toFixed(2) }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Shipping:</span>
+            <span>${{ data.order.shippingCost.toFixed(2) }}</span>
+        </div>
+        <div class="summary-row">
+            <span>Tax:</span>
+            <span>${{ data.order.tax.toFixed(2) }}</span>
+        </div>
+        <div class="summary-row total">
+            <span>Total:</span>
+            <span>${{ total.toFixed(2) }}</span>
+        </div>
+    </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onClose()">Close</button>
+</mat-dialog-actions>

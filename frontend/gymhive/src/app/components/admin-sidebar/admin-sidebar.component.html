@@ -1,0 +1,26 @@
+<div class="sidebar-container">
+    <div class="sidebar-header">
+        <div class="logo">
+            <span class="logo-icon">GH</span>
+            <span class="logo-text" *ngIf="!isCollapsed">GYM HIVE</span>
+        </div>
+    </div>
+
+    <nav class="sidebar-nav">
+        <ul>
+            <li *ngFor="let item of navItems">
+                <a [routerLink]="item.route" routerLinkActive="active">
+                    <i class="nav-icon icon-{{item.icon}}"></i>
+                    <span class="nav-label" *ngIf="!isCollapsed">{{item.label}}</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- <div class="sidebar-footer">
+        <a routerLink="/login" class="logout-btn">
+            <i class="nav-icon icon-logout"></i>
+            <span class="nav-label" *ngIf="!isCollapsed">Logout</span>
+        </a>
+    </div> -->
+</div>

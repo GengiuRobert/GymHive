@@ -1,58 +1,123 @@
-<div class="dummy-page">
-  <h2>Dummy Page - Product CRUD</h2>
+<div class="dashboard-container">
+  <h1 class="page-title">Dashboard Overview</h1>
 
-  <div class="form-section">
-    <h3>Add Product</h3>
-    <label for="newName">Name:</label>
-    <input type="text" id="newName" [(ngModel)]="newProduct.name" placeholder="Enter product name">
+  <div class="stats-grid">
+    <app-card>
+      <div class="stat-card">
+        <div class="stat-icon products-icon">📦</div>
+        <div class="stat-content">
+          <div class="stat-value">{{stats.totalProducts}}</div>
+          <div class="stat-label">Products</div>
+        </div>
+      </div>
+    </app-card>
 
-    <label for="newDescription">Description:</label>
-    <input type="text" id="newDescription" [(ngModel)]="newProduct.description" placeholder="Enter product description">
+    <app-card>
+      <div class="stat-card">
+        <div class="stat-icon categories-icon">🗂️</div>
+        <div class="stat-content">
+          <div class="stat-value">{{stats.totalCategories}}</div>
+          <div class="stat-label">Categories</div>
+        </div>
+      </div>
+    </app-card>
 
-    <label for="newPrice">Price:</label>
-    <input type="number" id="newPrice" [(ngModel)]="newProduct.price" placeholder="Enter product price">
-    
-    <label for="newCategory">Price:</label>
-    <input type="text" id="newCategory" [(ngModel)]="newProduct.categoryId" placeholder="Enter product category">
+    <app-card>
+      <div class="stat-card">
+        <div class="stat-icon orders-icon">🛒</div>
+        <div class="stat-content">
+          <div class="stat-value">{{stats.totalOrders}}</div>
+          <div class="stat-label">Orders</div>
+        </div>
+      </div>
+    </app-card>
 
-    <button (click)="addProduct()">Add Product</button>
+    <app-card>
+      <div class="stat-card">
+        <div class="stat-icon users-icon">👥</div>
+        <div class="stat-content">
+          <div class="stat-value">{{stats.activeUsers}}</div>
+          <div class="stat-label">Active Users</div>
+        </div>
+      </div>
+    </app-card>
   </div>
 
-  <div class="form-section">
-    <h3>Update Product</h3>
-    <label for="updateProductId">Product ID:</label>
-    <input type="text" id="updateProductId" [(ngModel)]="updateProductId" placeholder="Enter product ID">
+  <div class="dashboard-section">
+    <h2 class="section-title">Recent Orders</h2>
 
-    <label for="updateName">New Name:</label>
-    <input type="text" id="updateName" [(ngModel)]="updatedProduct.name" placeholder="Enter new product name">
+    <app-card>
+      <div *ngIf="isLoading" class="loading-container">
+        <div class="loading-spinner"></div>
+        <p>Loading data...</p>
+      </div>
 
-    <label for="updateDescription">New Description:</label>
-    <input type="text" id="updateDescription" [(ngModel)]="updatedProduct.description"
-      placeholder="Enter new description">
+      <div *ngIf="!isLoading" class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let order of recentOrders">
+              <td>{{order.id}}</td>
+              <td>{{order.customer}}</td>
+              <td>{{order.date}}</td>
+              <td>${{order.total.toFixed(2)}}</td>
+              <td>
+                <span class="status-badge" [ngClass]="order.status.toLowerCase()">
+                  {{order.status}}
+                </span>
+              </td>
+              <td>
+                <a [routerLink]="['/admin/orders', order.id]" class="action-btn">
+                  <span class="icon-view">👁️</span>
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
 
-    <label for="updatePrice">New Price:</label>
-    <input type="number" id="updatePrice" [(ngModel)]="updatedProduct.price" placeholder="Enter new price">
+        <div *ngIf="recentOrders.length === 0" class="empty-state">
+          <p>No orders found</p>
+        </div>
+      </div>
 
-    <label for="updateCategory">New Category:</label>
-    <input type="text" id="updateCategory" [(ngModel)]="updatedProduct.categoryId" placeholder="Enter new category">
-
-    <button (click)="updateProduct()">Update Product</button>
+      <div class="card-footer">
+        <a routerLink="/admin/orders" class="view-all-link">View All Orders</a>
+      </div>
+    </app-card>
   </div>
 
-  <div class="form-section">
-    <h3>Delete Product</h3>
-    <label for="deleteProductId">Product ID:</label>
-    <input type="text" id="deleteProductId" [(ngModel)]="deleteProductId" placeholder="Enter product ID to delete">
+  <div class="dashboard-section">
+    <h2 class="section-title">Quick Actions</h2>
 
-    <button (click)="deleteProduct()">Delete Product</button>
-  </div>
+    <div class="quick-actions">
+      <a routerLink="/admin/products/new" class="quick-action-btn">
+        <span class="quick-action-icon">➕</span>
+        <span class="quick-action-label">Add Product</span>
+      </a>
 
-  <div class="products-list">
-    <h3>Products:</h3>
-    <ul>
-      <li *ngFor="let product of products">
-        <strong>{{ product.productId }}</strong> - {{ product.name }} - {{ product.description }} - {{ product.price }}$ - {{ product.categoryId }}
-      </li>
-    </ul>
+      <a routerLink="/admin/categories/new" class="quick-action-btn">
+        <span class="quick-action-icon">➕</span>
+        <span class="quick-action-label">Add Category</span>
+      </a>
+
+      <a routerLink="/admin/subcategories/new" class="quick-action-btn">
+        <span class="quick-action-icon">➕</span>
+        <span class="quick-action-label">Add Subcategory</span>
+      </a>
+
+      <a routerLink="/admin/orders" class="quick-action-btn">
+        <span class="quick-action-icon">🔍</span>
+        <span class="quick-action-label">View Orders</span>
+      </a>
+    </div>
   </div>
 </div>

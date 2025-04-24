@@ -1,0 +1,100 @@
+<div class="product-form-container">
+    <div class="page-header">
+        <h1 class="page-title">{{ isEdit ? 'Edit Product' : 'Add New Product' }}</h1>
+        <a routerLink="/admin/products" class="btn btn-secondary">
+            <span class="btn-icon">←</span>
+            Back to Products
+        </a>
+    </div>
+
+    <app-card>
+        <div *ngIf="isLoading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <form *ngIf="!isLoading" (ngSubmit)="onSubmit()" #productForm="ngForm">
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="name">Product Name</label>
+                    <input type="text" id="name" name="name" [(ngModel)]="product.name" required
+                        [class.is-invalid]="formSubmitted && !product.name">
+                    <div *ngIf="formSubmitted && !product.name" class="error-message">
+                        Product name is required
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="description">Description</label>
+                    <textarea id="description" name="description" [(ngModel)]="product.description" rows="4" required
+                        [class.is-invalid]="formSubmitted && !product.description"></textarea>
+                    <div *ngIf="formSubmitted && !product.description" class="error-message">
+                        Description is required
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" id="price" name="price" [(ngModel)]="product.price" min="0.01" step="0.01"
+                        required [class.is-invalid]="formSubmitted && (product.price <= 0)">
+                    <div *ngIf="formSubmitted && (product.price <= 0)" class="error-message">
+                        Price must be greater than 0
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="categoryId" [(ngModel)]="product.categoryId"
+                        (change)="onCategoryChange()" required
+                        [class.is-invalid]="formSubmitted && !product.categoryId">
+                        <option value="" disabled>Select a category</option>
+                        <option *ngFor="let category of categories" [value]="category.categoryId">
+                            {{ category.categoryName }}
+                        </option>
+                    </select>
+                    <div *ngIf="formSubmitted && !product.categoryId" class="error-message">
+                        Category is required
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="subcategory">Subcategory</label>
+                    <select id="subcategory" name="subCategoryId" [(ngModel)]="product.subCategoryId" required
+                        [disabled]="!product.categoryId || filteredSubcategories.length === 0"
+                        [class.is-invalid]="formSubmitted && !product.subCategoryId">
+                        <option value="" disabled>Select a subcategory</option>
+                        <option *ngFor="let subcategory of filteredSubcategories" [value]="subcategory.subCategoryId">
+                            {{ subcategory.subCategoryName }}
+                        </option>
+                    </select>
+                    <div *ngIf="formSubmitted && !product.subCategoryId" class="error-message">
+                        Subcategory is required
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="imageUrl">Image URL</label>
+                    <input type="text" id="imageUrl" name="imageUrl" [(ngModel)]="product.imageUrl" required
+                        [class.is-invalid]="formSubmitted && !product.imageUrl">
+                    <div *ngIf="formSubmitted && !product.imageUrl" class="error-message">
+                        Image URL is required
+                    </div>
+                </div>
+
+                <div *ngIf="product.imageUrl" class="form-group full-width">
+                    <label>Image Preview</label>
+                    <div class="image-preview">
+                        <img [src]="product.imageUrl" alt="Product preview">
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a routerLink="/admin/products" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+                    {{ isLoading ? 'Saving...' : (isEdit ? 'Update Product' : 'Add Product') }}
+                </button>
+            </div>
+        </form>
+    </app-card>
+</div>

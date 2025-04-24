@@ -1,4 +1,4 @@
 export interface Category {
-    categoryId: string,
+    categoryId?: string,
     categoryName: string
 }

@@ -35,4 +35,30 @@ export class SubCategoryService {
             })
         );
     }
+
+    addSubCategory(newSub: SubCategory): Observable<string> {
+
+        const my_url = this.baseUrl + '/add-subcategory'
+
+        return this.http.post(my_url, newSub, { responseType: 'text' })
+
+    }
+
+    deleteSubCategoryById(subCategoryId: string): Observable<string> {
+
+        const my_url = `${this.baseUrl}/delete-subcategory-by-id/${subCategoryId}`
+
+        return this.http.delete(my_url, { responseType: 'text' })
+
+    }
+
+    updateSubCategoryById(subCategoryId: string, updated: SubCategory): Observable<string> {
+
+        const my_url = `${this.baseUrl}/update-subcategory-by-id/${subCategoryId}`
+
+        return this.http.put(my_url, updated, { responseType: 'text' })
+
+    }
+
+
 }

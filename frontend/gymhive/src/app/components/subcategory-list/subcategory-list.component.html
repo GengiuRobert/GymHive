@@ -1,0 +1,66 @@
+<div class="subcategory-list-container">
+    <div class="header-actions">
+        <h1>Subcategories Management</h1>
+        <button mat-raised-button color="primary" (click)="openSubcategoryForm()">
+            <span class="btn-icon">+</span>Add Subcategory
+        </button>
+    </div>
+
+    <mat-form-field appearance="outline" class="filter-field">
+        <mat-label>Filter</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Search subcategories...">
+    </mat-form-field>
+
+    <div class="mat-elevation-z8 table-container">
+        <table mat-table [dataSource]="dataSource" matSort>
+            <!-- ID Column -->
+            <ng-container matColumnDef="subCategoryId">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+                <td mat-cell *matCellDef="let subcategory"> {{subcategory.subCategoryId}} </td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="subCategoryName">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Name </th>
+                <td mat-cell *matCellDef="let subcategory"> {{subcategory.subCategoryName}} </td>
+            </ng-container>
+
+            <!-- Parent Category Column -->
+            <ng-container matColumnDef="parentCategory">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header> Parent Category </th>
+                <td mat-cell *matCellDef="let subcategory"> {{subcategory.parentCategoryName}} </td>
+            </ng-container>
+
+            <!-- Actions Column -->
+            <ng-container matColumnDef="actions">
+                <th mat-header-cell *matHeaderCellDef> Actions </th>
+                <td mat-cell *matCellDef="let subcategory">
+                    <button mat-icon-button color="primary" (click)="openSubcategoryForm(subcategory)"
+                        matTooltip="Edit">
+                        <span class="icon-edit">✏️</span>
+                    </button>
+                    <button mat-icon-button color="warn" (click)="deleteSubcategory(subcategory)" matTooltip="Delete">
+                        <span class="icon-delete">🗑️</span>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <!-- Row shown when there is no matching data -->
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4">
+                    <div *ngIf="isLoading" class="loading-message">
+                        Loading subcategories...
+                    </div>
+                    <div *ngIf="!isLoading" class="no-data-message">
+                        No subcategories found
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons></mat-paginator>
+    </div>
+</div>
