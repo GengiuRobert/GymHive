@@ -8,8 +8,10 @@ import com.google.cloud.firestore.*;
 import org.springframework.stereotype.Repository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.stream.Collectors;
 
 @Repository
 public class WishListRepository {
@@ -100,5 +102,29 @@ public class WishListRepository {
         DocumentReference docRef = collection.document(wishListId);
         docRef.delete();
         return "wishList deleted";
+    }
+
+
+    public List<WishList> findByFavoriteProductsProductIdContains(String productId) {
+        try {
+            CollectionReference col = firestoreService.getCollection("wishLists");
+            ApiFuture<QuerySnapshot> future = col.get();
+            List<WishList> all = future.get()
+                    .getDocuments()
+                    .stream()
+                    .map(d -> d.toObject(WishList.class))
+                    .toList();
+
+            return all.stream()
+                    .filter(wl -> wl.getFavoriteProducts() != null &&
+                            wl.getFavoriteProducts()
+                                    .stream()
+                                    .anyMatch(p -> productId.equals(p.getProductId())))
+                    .collect(Collectors.toList());
+
+        } catch (InterruptedException | ExecutionException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Failed to query wishlists", e);
+        }
     }
 }
