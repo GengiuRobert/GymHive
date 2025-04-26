@@ -18,8 +18,6 @@ A comprehensive e-commerce platform for fitness supplements built with Spring Bo
 - [Database Structure](#-database-structure)
 - [Security Implementation](#-security-implementation)
 - [Future Improvements](#-future-improvements)
-- [Contributors](#-contributors)
-- [License](#-license)
 
 ## ✨ Features
 
@@ -201,7 +199,7 @@ Each document holds fields and nested lists/objects.
 - User-specific subscription channels
 - Message payload validation
 
-## 🚧Future Improvements
+## 🚧 Future Improvements
 
 ### Short-term
 - Payment Gateway 💳 – Stripe/PayPal integration
