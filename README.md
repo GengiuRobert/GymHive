@@ -2,7 +2,6 @@
 
 A comprehensive e-commerce platform for fitness supplements built with Spring Boot backend and Angular frontend. GymHive offers a seamless shopping experience with real-time notifications, user profiles, wishlist functionality, and a powerful admin dashboard.
 
-[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.4.0-brightgreen.svg)](https://spring.io/projects/spring-boot)
 [![Angular](https://img.shields.io/badge/Angular-19.2.0-red.svg)](https://angular.io/)
 [![Firebase](https://img.shields.io/badge/Firebase-13.0.0-orange.svg)](https://firebase.google.com/)
