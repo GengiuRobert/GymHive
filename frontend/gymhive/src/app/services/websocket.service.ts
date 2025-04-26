@@ -14,7 +14,6 @@ export class WebSocketService {
     private notificationSubject = new BehaviorSubject<PriceChangeNotification | null>(null);
     private connected = false;
     private userId: string | null = null;
-    private processedNotifications = new Set<string>()
 
     constructor(private userService: UserService) {
         const stompConfig: StompConfig = {
@@ -56,48 +55,67 @@ export class WebSocketService {
         }
     }
 
+    // private onConnected(frame: any) {
+
+    //     this.connected = true;
+    //     console.log('Connected to WebSocket');
+
+    //     this.client.subscribe('/topic/notifications', (msg: Message) => {
+    //         try {
+    //             const notification = JSON.parse(msg.body) as PriceChangeNotification;
+
+    //             this.notificationSubject.next(notification);
+    //         } catch (e) {
+    //             console.error('Error parsing notification:', e);
+    //         }
+    //     });
+
+    //     if (this.userId) {
+    //         this.client.subscribe(`/topic/user/${this.userId}/notifications`, (msg: Message) => {
+    //             try {
+    //                 const notification = JSON.parse(msg.body) as PriceChangeNotification;
+
+    //                 this.notificationSubject.next(notification);
+    //             } catch (e) {
+    //                 console.error('Error parsing user notification:', e);
+    //             }
+    //         });
+
+    //         //inform the server that this user is subscribing
+    //         this.client.publish({
+    //             destination: `/app/user/${this.userId}/subscribe`,
+    //             body: JSON.stringify({ userId: this.userId })
+    //         });
+    //     }
+    // }
+
     private onConnected(frame: any) {
 
         this.connected = true;
         console.log('Connected to WebSocket');
 
-        this.client.subscribe('/topic/notifications', (msg: Message) => {
-            try {
-                const notification = JSON.parse(msg.body) as PriceChangeNotification;
+        const isAdmin = this.userService.isAdmin();
 
-                // const notificationKey = `${notification.type}_${notification.productId}_${notification.timestamp}`
-
-                // if (!this.processedNotifications.has(notificationKey)) {
-                //     this.processedNotifications.add(notificationKey)
-                //     this.notificationSubject.next(notification)
-                // }
-
-                //incearca asta sa vezi daca e ok, ii dai uncomment, pe aia de jos o lasi cu comment 
-                //this.notificationSubject.next(notification);
-            } catch (e) {
-                console.error('Error parsing notification:', e);
-            }
-        });
-
-        if (this.userId) {
+        if (isAdmin) {
+            this.client.subscribe('/topic/notifications', (msg: Message) => {
+                try {
+                    const notification = JSON.parse(msg.body) as PriceChangeNotification;
+                    this.notificationSubject.next(notification);
+                } catch (e) {
+                    console.error('Error parsing notification:', e);
+                }
+            });
+        } else if (this.userId) {
             this.client.subscribe(`/topic/user/${this.userId}/notifications`, (msg: Message) => {
                 try {
                     const notification = JSON.parse(msg.body) as PriceChangeNotification;
-
-                    // const notificationKey = `${notification.type}_${notification.productId}_${notification.timestamp}`
-
-                    // if (!this.processedNotifications.has(notificationKey)) {
-                    //     this.processedNotifications.add(notificationKey)
-                    //     this.notificationSubject.next(notification)
-                    // }
-
                     this.notificationSubject.next(notification);
                 } catch (e) {
                     console.error('Error parsing user notification:', e);
                 }
             });
 
-            // Inform the server that this user is subscribing
+            //inform the server that this user is subscribing
             this.client.publish({
                 destination: `/app/user/${this.userId}/subscribe`,
                 body: JSON.stringify({ userId: this.userId })

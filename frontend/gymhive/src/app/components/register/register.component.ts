@@ -1,7 +1,7 @@
 import { Component } from "@angular/core"
 import { CommonModule } from "@angular/common"
 import { FormsModule, NgForm } from "@angular/forms"
-import { RouterModule } from "@angular/router"
+import { Router, RouterModule } from "@angular/router"
 
 import { UserService } from "../../services/user.service"
 import { UserProfileService } from "../../services/profile.service"
@@ -26,7 +26,8 @@ export class RegisterComponent {
   constructor(private userService: UserService,
     private profileService: UserProfileService,
     private shoppingCartService: ShoppingCartService,
-    private wishListService: WishlistService) { }
+    private wishListService: WishlistService,
+    private router:Router) { }
 
   userData: RegisterData = {
     firstName: "",
@@ -81,6 +82,7 @@ export class RegisterComponent {
           },
           (cartError) => {
             console.error("Error creating shopping cart:", cartError);
+            this.isSubmitting = false;
           }
         );
 
@@ -95,10 +97,13 @@ export class RegisterComponent {
           },
           (wishlistError) => {
             console.error("Error creating wishlist:", wishlistError);
+            this.isSubmitting = false;
           }
         );
-
+        
         form.reset();
+        this.isSubmitting = false;
+        this.router.navigate(["/login"]);
       },
       (error) => {
         this.errorMessage = "Sign-up failed. Please try again.";

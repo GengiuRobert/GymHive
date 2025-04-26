@@ -51,7 +51,14 @@ export class ProductService {
                         const productsWithImagePaths = results.map((result) => {
                             const catName = result.categoryName.toLowerCase().replace(/\s+/g, "_")
                             const subCatName = result.subCategoryName.toLowerCase().replace(/\s+/g, "_")
-                            const imagePath = `assets/${catName}/${subCatName}/${result.product.imageUrl}`
+
+                            let imagePath = ''
+
+                            if (!result.product.imageUrl.includes("assets")) {
+                                imagePath = `assets/${catName}/${subCatName}/${result.product.imageUrl}`
+                            } else if (result.product.imageUrl.includes("assets")) {
+                                imagePath = result.product.imageUrl
+                            }
 
                             return {
                                 ...result.product,
