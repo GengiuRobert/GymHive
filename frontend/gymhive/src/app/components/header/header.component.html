@@ -11,12 +11,20 @@
                 <li *ngFor="let category of categories" class="dropdown">
                     <a [routerLink]="category.link">{{ category.name }}</a>
                 </li>
+
+                @if(isAdmin){
+                <li><a routerLink="/admin">Admin Dashboard</a></li>
+                }
+                
                 <li><a routerLink="/deals">Special Deals</a></li>
                 <li><a routerLink="/blog">Fitness Blog</a></li>
             </ul>
         </nav>
 
         <div class="header-actions">
+            @if(isAuthenticated){
+            <app-websocket-notification />
+            }
             <div class="search-container" [class.active]="isSearchOpen">
                 <button class="icon-button search-toggle" (click)="toggleSearch()" aria-label="Search">
                     <i class="icon-search"></i>

@@ -86,6 +86,11 @@ export class UserService {
         return this.user.getValue()?.id;
     }
 
+    public isAdmin(): boolean {
+        const u = this.user.getValue();
+        return !!u && u.email === 'admin@gmail.com';
+    }
+
     private handleAuthentication(
         email: string,
         userId: string,

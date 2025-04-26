@@ -7,6 +7,7 @@ import { Subscription } from 'rxjs';
 import { ProductDetailsModalComponent } from "../product-details-modal/product-details-modal.component";
 import { SearchResultsComponent } from "../search-results/search-results.component";
 import { ShoppingCartModalComponent } from "../shopping-cart-modal/shopping-cart-modal.component";
+import { WebsocketNotificationComponent } from "../websocket-notification/websocket-notification.component";
 
 import { SidebarItem } from '../../models/categorySidebarItem.model';
 import { Product } from '../../models/product.model';
@@ -14,10 +15,11 @@ import { Product } from '../../models/product.model';
 import { UserService } from '../../services/user.service';
 import { SearchService } from '../../services/search.service';
 import { ShoppingCartService } from '../../services/shopping-cart.service';
+import { WebSocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, RouterModule, FormsModule, ProductDetailsModalComponent, SearchResultsComponent, ShoppingCartModalComponent],
+  imports: [CommonModule, RouterModule, FormsModule, ProductDetailsModalComponent, SearchResultsComponent, ShoppingCartModalComponent, WebsocketNotificationComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
@@ -31,6 +33,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   showSearchResults = false
   isModalOpen = false
   isCartModalOpen = false
+  isAdmin = false
 
   private userSub!: Subscription;
   private searchSub!: Subscription
@@ -60,13 +63,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   ]
 
-  constructor(private userService: UserService, private searchService: SearchService, private shoppingCartService: ShoppingCartService,) { }
+  constructor(private userService: UserService, private searchService: SearchService, private shoppingCartService: ShoppingCartService, private webSocketService: WebSocketService) { }
 
   ngOnInit(): void {
 
     this.userSub = this.userService.user.subscribe(user => {
       this.isAuthenticated = !!user
       if (user) {
+
+        if (user.email === 'admin@gmail.com') {
+          this.isAdmin = true
+        }
+
         this.userId = user.id
         this.loadCartItemCount()
       } else {
