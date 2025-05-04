@@ -30,14 +30,21 @@ public class WebSocketNotificationService {
 
     public void notifyPriceChange(Product oldProduct, Product updatedProduct) {
 
+        System.out.println("notifyPriceChange called: old price = " + oldProduct.getPrice() + ", new price = " + updatedProduct.getPrice());
+
         if (!Objects.equals(oldProduct.getPrice(), updatedProduct.getPrice())) {
+
+            System.out.println("Price has changed, finding affected wishlists for product: " + updatedProduct.getProductId());
 
             try {
 
                 //find all wishlists containing this product
                 List<WishList> affectedWishlists = wishListRepository.findByFavoriteProductsProductIdContains(updatedProduct.getProductId());
+                System.out.println("Found " + affectedWishlists.size() + " affected wishlists");
 
                 for (WishList wishlist : affectedWishlists) {
+
+                    System.out.println("Sending notification to user: " + wishlist.getUserId());
 
                     //notification payload
                     Map<String, Object> notification = new HashMap<>();
@@ -58,9 +65,12 @@ public class WebSocketNotificationService {
 
                     // Send to user-specific topic
                     messagingTemplate.convertAndSend("/topic/user/" + wishlist.getUserId() + "/notifications", message);
+                    System.out.println("Notification sent to user-specific topic: /topic/user/" + wishlist.getUserId() + "/notifications");
+
 
                     // Also send to general topic for admin monitoring
                     messagingTemplate.convertAndSend("/topic/notifications", message);
+                    System.out.println("Notification sent to general topic: /topic/notifications");
                 }
             } catch (Exception e) {
                 e.printStackTrace();
