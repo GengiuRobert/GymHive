@@ -55,59 +55,16 @@ export class WebSocketService {
         }
     }
 
-    // private onConnected(frame: any) {
-
-    //     this.connected = true;
-    //     console.log('Connected to WebSocket');
-
-    //     this.client.subscribe('/topic/notifications', (msg: Message) => {
-    //         try {
-    //             const notification = JSON.parse(msg.body) as PriceChangeNotification;
-
-    //             this.notificationSubject.next(notification);
-    //         } catch (e) {
-    //             console.error('Error parsing notification:', e);
-    //         }
-    //     });
-
-    //     if (this.userId) {
-    //         this.client.subscribe(`/topic/user/${this.userId}/notifications`, (msg: Message) => {
-    //             try {
-    //                 const notification = JSON.parse(msg.body) as PriceChangeNotification;
-
-    //                 this.notificationSubject.next(notification);
-    //             } catch (e) {
-    //                 console.error('Error parsing user notification:', e);
-    //             }
-    //         });
-
-    //         //inform the server that this user is subscribing
-    //         this.client.publish({
-    //             destination: `/app/user/${this.userId}/subscribe`,
-    //             body: JSON.stringify({ userId: this.userId })
-    //         });
-    //     }
-    // }
-
     private onConnected(frame: any) {
-
         this.connected = true;
         console.log('Connected to WebSocket');
 
-        const isAdmin = this.userService.isAdmin();
+        if (this.userId) {
+            console.log(`Subscribing to user-specific topic: /topic/user/${this.userId}/notifications`);
 
-        if (isAdmin) {
-            this.client.subscribe('/topic/notifications', (msg: Message) => {
-                try {
-                    const notification = JSON.parse(msg.body) as PriceChangeNotification;
-                    this.notificationSubject.next(notification);
-                } catch (e) {
-                    console.error('Error parsing notification:', e);
-                }
-            });
-        } else if (this.userId) {
             this.client.subscribe(`/topic/user/${this.userId}/notifications`, (msg: Message) => {
                 try {
+                    console.log(`Received message on user topic: ${msg.body}`);
                     const notification = JSON.parse(msg.body) as PriceChangeNotification;
                     this.notificationSubject.next(notification);
                 } catch (e) {
@@ -115,10 +72,24 @@ export class WebSocketService {
                 }
             });
 
-            //inform the server that this user is subscribing
             this.client.publish({
                 destination: `/app/user/${this.userId}/subscribe`,
                 body: JSON.stringify({ userId: this.userId })
+            });
+        }
+
+        const isAdmin = this.userService.isAdmin();
+        if (isAdmin) {
+            console.log('Admin subscribing to general notifications topic');
+
+            this.client.subscribe('/topic/notifications', (msg: Message) => {
+                try {
+                    console.log(`Admin received general notification: ${msg.body}`);
+                    const notification = JSON.parse(msg.body) as PriceChangeNotification;
+                    this.notificationSubject.next(notification);
+                } catch (e) {
+                    console.error('Error parsing notification:', e);
+                }
             });
         }
     }

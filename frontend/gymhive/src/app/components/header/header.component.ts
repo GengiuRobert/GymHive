@@ -38,6 +38,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private userSub!: Subscription;
   private searchSub!: Subscription
   private cartUpdateSub!: Subscription
+  private notificationSub!: Subscription
 
   activeCategory: SidebarItem | null = null
   searchResults: any[] = []
@@ -103,6 +104,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
         this.loadCartItemCount()
       }
     })
+
+    this.notificationSub = this.webSocketService.notifications$.subscribe((notification) => {
+      console.log("Received notification:", notification)
+    })
   }
 
   ngOnDestroy(): void {
@@ -114,6 +119,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
     if (this.cartUpdateSub) {
       this.cartUpdateSub.unsubscribe()
+    }
+    if (this.notificationSub) {
+      this.notificationSub.unsubscribe()
     }
   }
 
